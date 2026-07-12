@@ -16,9 +16,11 @@ let pathList = [
 
 const Index = () => {
 
+    const description = '记录前端开发、工具链等领域的实践与思考。从 React 到 Node.js，从 Webpack 到数据库优化，每一篇都是真实项目中踩坑后的沉淀。';
+
     return <div className='tech-page'>
         <BreadCrumb pathList={pathList} />
-        <ArticleList type='1'/>
+        <ArticleList type='1' description={description}/>
     </div>
 }
 

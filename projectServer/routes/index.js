@@ -105,7 +105,7 @@ router.post('/api/addArticle', function (req, res, next) {
   connection.query(addArticle, [title, author, type, description, time, content, 'lzd', submitTime], function (err, results) {
     console.log(results, 'results');
     let obj = {
-      data: 'success',
+      data: { id: results.insertId },
       meta: {
         code: 0
       }

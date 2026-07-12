@@ -11,12 +11,12 @@
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
+		"@ant-design/icons": "^4.7.0",
 		"@babel/core": "^7.15.5",
 		"@babel/preset-env": "^7.15.6",
 		"@babel/preset-react": "^7.14.5",
-    "antd": "^4.16.13",
-    "@ant-design/icons": "^4.7.0",
-    "axios": "^0.21.4",
+		"antd": "^4.16.13",
+		"axios": "^0.21.4",
 		"babel-loader": "^8.2.2",
 		"babel-plugin-import": "^1.13.3",
 		"css-loader": "^6.3.0",
@@ -33,5 +33,9 @@
 		"webpack": "^5.53.0",
 		"webpack-cli": "^4.8.0",
 		"webpack-dev-server": "^4.2.1"
+	},
+	"dependencies": {
+		"@wangeditor/editor": "^5.1.23",
+		"@wangeditor/editor-for-react": "^1.0.6"
 	}
 }

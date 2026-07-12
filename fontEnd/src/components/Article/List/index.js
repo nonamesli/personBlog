@@ -13,7 +13,7 @@ import './index.scss';
 
 const Index = (props) => {
 
-    const { type, match: { path } } = props;
+    const { type, match: { path }, description } = props;
 
     const [list, setList] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -40,6 +40,13 @@ const typeColorMap = {
 };
 
     return <div className='article-list-page'>
+        {/* 栏目描述区 */}
+        {description && (
+            <div className='category-desc-banner'>
+                <p className='category-desc-text'>{description}</p>
+            </div>
+        )}
+
         {/* 页面标题区 */}
         <div className='list-header'>
             <FileTextOutlined className='list-header-icon' />

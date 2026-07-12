@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Form,
     Input,
-    Select,
     Button,
     message,
     Card,
@@ -12,23 +11,24 @@ import {
 } from 'antd';
 import { addArticle_request } from 'api/request';
 import BreadCrumb from 'components/BreadCrumb';
-import {
-    EditOutlined,
+import { useHistory } from 'react-router-dom';
+import { EditOutlined,
     SendOutlined,
     ClearOutlined,
     CodeOutlined,
     HeartOutlined,
 } from '@ant-design/icons';
+import { Editor, Toolbar } from '@wangeditor/editor-for-react';
+import '@wangeditor/editor/dist/css/style.css';
 import './index.scss';
 
 const { TextArea } = Input;
 const { Title } = Typography;
-const { Option } = Select;
 
-// 类型配置（value 对应后端查询的 type 参数，label 用于展示）
+// 类型配置
 const TYPE_OPTIONS = [
-    { value: '1', label: '技术', icon: <CodeOutlined />, color: '#6366f1' },
-    { value: '2', label: '生活', icon: <HeartOutlined />, color: '#10b981' },
+    { value: '1', label: '技术', icon: <CodeOutlined />, color: '#6366f1', slug: 'tech' },
+    { value: '2', label: '生活', icon: <HeartOutlined />, color: '#10b981', slug: 'live' },
 ];
 
 let pathList = [
@@ -36,19 +36,74 @@ let pathList = [
     { name: '写文章', path: '/write' },
 ];
 
+// 编辑器工具栏配置
+const toolbarConfig = {
+    toolbarKeys: [
+        'headerSelect',
+        'bold',
+        'italic',
+        'underline',
+        'through',
+        '|',
+        'color',
+        'bgColor',
+        '|',
+        'bulletedList',
+        'numberedList',
+        '|',
+        'justifyLeft',
+        'justifyCenter',
+        'justifyRight',
+        '|',
+        'insertTable',
+        'insertLink',
+        '|',
+        'undo',
+        'redo',
+        '|',
+        'fullScreen'
+    ]
+};
+
+// 编辑器内容配置
+const editorConfig = {
+    placeholder: '开始撰写你的文章...',
+};
+
 const Index = () => {
 
     const [form] = Form.useForm();
     const [submitting, setSubmitting] = useState(false);
     const [selectedType, setSelectedType] = useState('1');
+    const [htmlContent, setHtmlContent] = useState('');
+    const history = useHistory();
+
+    // 编辑器实例引用
+    const [editor, setEditor] = useState(null);
+
+    // 组件销毁时销毁编辑器
+    useEffect(() => {
+        return () => {
+            if (editor) {
+                editor.destroy();
+                setEditor(null);
+            }
+        };
+    }, [editor]);
 
     // 提交文章
     const handleFinish = async (values) => {
+        if (!htmlContent || htmlContent === '<p><br></p>') {
+            message.warning('请输入正文内容');
+            return;
+        }
+
         setSubmitting(true);
 
         try {
             const res = await addArticle_request({
                 ...values,
+                content: htmlContent,
                 desc: values.description,
                 type: selectedType,
                 submitTime: new Date().toLocaleDateString().replace(/\//g, '-'),
@@ -56,8 +111,17 @@ const Index = () => {
 
             if (res?.meta?.code === 0) {
                 message.success('文章发布成功！');
-                form.resetFields();
-                setSelectedType('1');
+                // 获取新文章 ID 和类型对应的 slug
+                const articleId = res.data?.id;
+                const typeSlug = TYPE_OPTIONS.find(t => t.value === selectedType)?.slug || 'tech';
+                if (articleId) {
+                    history.push(`/${typeSlug}/article/${articleId}`);
+                } else {
+                    form.resetFields();
+                    setHtmlContent('');
+                    setSelectedType('1');
+                    if (editor) editor.clear();
+                }
             } else {
                 message.error('发布失败，请重试');
             }
@@ -70,7 +134,9 @@ const Index = () => {
 
     const handleReset = () => {
         form.resetFields();
+        setHtmlContent('');
         setSelectedType('1');
+        if (editor) editor.clear();
     };
 
     return (
@@ -129,7 +195,6 @@ const Index = () => {
                                 </div>
                             ))}
                         </div>
-                        {/* 隐藏字段用于提交 */}
                         <input type='hidden' name='type' value={selectedType} />
                     </Form.Item>
 
@@ -147,17 +212,29 @@ const Index = () => {
                         />
                     </Form.Item>
 
-                    {/* 第四行：正文 */}
+                    {/* 第四行：富文本正文 */}
                     <Form.Item
-                        name='content'
                         label='正文内容'
-                        rules={[{ required: true, message: '请输入正文内容' }]}
+                        required
+                        style={{ marginBottom: 8 }}
                     >
-                        <TextArea
-                            rows={14}
-                            placeholder={'支持 HTML 内容编写\n\n示例：<h2>标题</h2>\n<p>段落内容...</p>'}
-                            className='content-editor'
-                        />
+                        <div className='rich-editor-wrapper'>
+                            <Toolbar
+                                editor={editor}
+                                defaultConfig={toolbarConfig}
+                                mode="default"
+                                className='rich-toolbar'
+                            />
+                            <Editor
+                                defaultConfig={editorConfig}
+                                value={htmlContent}
+                                onCreated={setEditor}
+                                onChange={(editor) => setHtmlContent(editor.getHtml())}
+                                mode="default"
+                                className='rich-editor'
+                            />
+                        </div>
+                        <span className='content-hint'>支持富文本格式：标题、加粗、列表、表格、链接等</span>
                     </Form.Item>
 
                     {/* 操作按钮 */}
@@ -182,7 +259,7 @@ const Index = () => {
                                 重置清空
                             </Button>
                         </Space>
-                        <Tag color='blue' className='action-tip'>支持 HTML 格式正文</Tag>
+                        <Tag color='#6366f1' className='action-tip'><EditOutlined /> 富文本编辑</Tag>
                     </div>
                 </Card>
             </Form>
