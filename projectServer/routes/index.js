@@ -1,7 +1,7 @@
 let express = require('express');
 var router = express.Router();
 let connection = require('../mysql/connect');
-let { searchTableSql, searchTableTotalSql, searchArticleListByType, searchArticleDetailById, addArticle, getRouterConfig, getLatestArticles } = require('../mysql/sql');
+let { searchTableSql, searchTableTotalSql, searchArticleListByType, searchArticleDetailById, addArticle, getRouterConfig, getLatestArticles, updateArticleContent } = require('../mysql/sql');
 
 //路由
 router.get('/api/getRouterConfig', function (req, res, next) {
@@ -114,6 +114,22 @@ router.post('/api/addArticle', function (req, res, next) {
   })
 });
 
+
+
+//更新文章内容
+router.post('/api/updateArticleContent', function (req, res, next) {
+  let { id, content } = req.body;
+  connection.query(updateArticleContent, [content, id], function (err, results) {
+    if (err) {
+      res.send({ data: null, meta: { code: 1, msg: err.message } });
+      return;
+    }
+    res.send({
+      data: { affectedRows: results.affectedRows },
+      meta: { code: 0 }
+    });
+  });
+});
 
 
 //联系

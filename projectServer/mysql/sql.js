@@ -28,6 +28,11 @@ exports.searchArticleListByType = 'select * from article where type= ?';
 exports.addArticle = "insert into article(title, author, type, description, time, content, submiter, submitTime) values(?, ?, ?, ?, ?, ?, ?, ?)";
 
 /**
+ * 更新文章内容
+ */
+exports.updateArticleContent = "update article set content = ? where id = ?";
+
+/**
  * 获取路由配置
  */
 exports.getRouterConfig = "select * from router";
