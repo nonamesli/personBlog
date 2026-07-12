@@ -1,3 +1,6 @@
+# Gitignore 模板 - Node.js / React 项目
+# 上传前确保项目包含此文件，避免上传不必要的文件
+
 # 依赖目录
 node_modules/
 .pnp
@@ -45,3 +48,6 @@ logs/
 # OS 文件
 Thumbs.db
 Desktop.ini
+
+# CodeBuddy 内部（可选不上传）
+.codebuddy/
