@@ -1,0 +1,180 @@
+.article-add-page {
+    width: 100%;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 28px 24px 60px;
+
+    /* ===== 页面头部 ===== */
+    .add-header {
+        text-align: center;
+        padding: 32px 0 28px;
+
+        .header-icon {
+            font-size: 28px;
+            color: #6366f1;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .header-title {
+            margin-bottom: 8px !important;
+            color: #111827;
+            letter-spacing: 1px;
+        }
+
+        .header-sub {
+            color: #9ca3af;
+            font-size: 14px;
+            margin: 0 !important;
+        }
+    }
+
+    /* ===== 表单 ===== */
+    .add-form {
+        .form-card {
+            border-radius: 16px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06), 0 1px 12px rgba(0, 0, 0, 0.04);
+            background: #fff;
+        }
+
+        /* 标题 + 作者 横排 */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 240px;
+            gap: 20px;
+        }
+
+        /* antd 表单标签统一样式 */
+        :global(.ant-form-item-label > label) {
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        :global(.ant-input),
+        :global(.ant-input-affix-wrapper) {
+            border-radius: 10px;
+            transition: all 0.25s ease;
+
+            &:focus,
+            &.ant-input-focused {
+                border-color: #a5b4fc;
+                box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            }
+        }
+
+        /* ===== 类型选择器（卡片式）===== */
+        .type-select-group {
+            display: flex;
+            gap: 12px;
+
+            .type-option {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                padding: 12px 16px;
+                border: 2px solid #e5e7eb;
+                border-radius: 12px;
+                cursor: pointer;
+                transition: all 0.25s ease;
+                background: #fafafa;
+
+                .type-option-icon {
+                    font-size: 18px;
+                    color: #9ca3af;
+                    transition: all 0.25s ease;
+                }
+
+                .type-option-label {
+                    font-size: 15px;
+                    font-weight: 500;
+                    color: #6b7280;
+                    transition: all 0.25s ease;
+                }
+
+                &:hover {
+                    border-color: var(--accent-color);
+                    background: rgba(99, 102, 241, 0.03);
+
+                    .type-option-icon,
+                    .type-option-label {
+                        color: var(--accent-color);
+                    }
+                }
+
+                &--active {
+                    border-color: var(--accent-color);
+                    background: linear-gradient(135deg, rgba(99, 102, 241, 0.06), rgba(139, 92, 246, 0.04));
+
+                    .type-option-icon,
+                    .type-option-label {
+                        color: var(--accent-color);
+                        font-weight: 600;
+                    }
+
+                    box-shadow: 0 2px 10px rgba(99, 102, 241, 0.12);
+                }
+            }
+        }
+
+        /* 正文编辑区 */
+        .content-editor {
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 13.5px;
+            line-height: 1.75;
+            border-radius: 12px;
+            resize: vertical;
+            min-height: 360px;
+
+            &::placeholder {
+                color: #c4b5fd;
+            }
+        }
+
+        /* ===== 底部操作栏 ===== */
+        .form-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 28px;
+            padding-top: 22px;
+            border-top: 1px solid #f0f0f0;
+
+            .btn-submit {
+                min-width: 140px;
+                height: 44px;
+                border-radius: 11px;
+                font-weight: 600;
+                font-size: 15px;
+                box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+            }
+
+            .btn-reset {
+                height: 44px;
+                border-radius: 11px;
+                font-weight: 500;
+                font-size: 15px;
+            }
+
+            .action-tip {
+                font-size: 12px;
+                opacity: 0.7;
+            }
+        }
+    }
+
+    /* 响应式 */
+    @media (max-width: 640px) {
+        padding: 20px 16px 40px;
+
+        .add-form .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .add-form .type-select-group {
+            flex-direction: column;
+        }
+    }
+}

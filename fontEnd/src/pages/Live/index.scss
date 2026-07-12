@@ -1,0 +1,10 @@
+.live-page {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 28px 24px 48px;
+
+    @media (max-width: 768px) {
+        padding: 16px 16px 32px;
+    }
+}

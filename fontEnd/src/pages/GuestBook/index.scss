@@ -1,0 +1,15 @@
+.guest-book-page {
+    width: 100%;
+    padding: 24px;
+    position: relative;
+
+    #vcomments {
+        position: relative;
+    }
+
+    .leancloud_visitors {
+        position: absolute;
+        right: 0px;
+        bottom: 46px;
+    }
+}
