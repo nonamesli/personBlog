@@ -133,8 +133,8 @@
 
     /* 上一篇 / 下一篇 导航 */
     .article-nav {
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         margin-top: 30px;
         padding-top: 20px;
         border-top: 1px solid #e8e8e8;
@@ -142,7 +142,6 @@
         .nav-item {
             display: flex;
             flex-direction: column;
-            max-width: 45%;
             text-decoration: none;
             transition: opacity 0.2s;
 
@@ -152,10 +151,12 @@
         }
 
         .nav-prev {
+            grid-column: 1;
             text-align: left;
         }
 
         .nav-next {
+            grid-column: 2;
             text-align: right;
         }
 

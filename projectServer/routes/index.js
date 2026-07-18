@@ -101,9 +101,10 @@ router.get('/api/getArticleDetailById', function (req, res, next) {
       res.send({ data: [], meta: { code: 1 } });
       return;
     }
-    // 查询上一篇和下一篇
-    connection.query(getPrevArticle, [id], function (err1, prev) {
-      connection.query(getNextArticle, [id], function (err2, next) {
+    const articleType = results[0].type;
+    // 查询上一篇和下一篇（同类型）
+    connection.query(getPrevArticle, [articleType, id], function (err1, prev) {
+      connection.query(getNextArticle, [articleType, id], function (err2, next) {
         let article = results[0];
         article.prevArticle = prev[0] || null;
         article.nextArticle = next[0] || null;

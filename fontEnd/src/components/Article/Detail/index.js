@@ -74,13 +74,15 @@ const Index = (props) => {
         
         {/* 上一篇 / 下一篇 导航 */}
         {(articleMsg?.prevArticle || articleMsg?.nextArticle) && (
-            <div className='article-nav'>
+            <div className={`article-nav${articleMsg?.prevArticle && articleMsg?.nextArticle ? ' has-both' : ''}`}>
+                {/* 上一篇：id更大/更新的文章 */}
                 {articleMsg?.prevArticle && (
                     <Link to={`/${pageType}/article/${articleMsg.prevArticle.id}`} className='nav-item nav-prev'>
                         <span className='nav-label'>← 上一篇</span>
                         <span className='nav-title'>{articleMsg.prevArticle.title}</span>
                     </Link>
                 )}
+                {/* 下一篇：id更小/更旧的文章 */}
                 {articleMsg?.nextArticle && (
                     <Link to={`/${pageType}/article/${articleMsg.nextArticle.id}`} className='nav-item nav-next'>
                         <span className='nav-label'>下一篇 →</span>
