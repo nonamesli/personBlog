@@ -174,6 +174,7 @@ const Index = () => {
                         <Form.Item
                             name='author'
                             label='作者'
+                            rules={[{ required: true, message: '请输入作者名称' }]}
                         >
                             <Input size='large' placeholder='作者名称' />
                         </Form.Item>
