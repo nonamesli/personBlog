@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { withRouter } from 'react-router-dom'
-import { List, Tag, Empty, Spin } from 'antd';
+import { List, Tag, Empty, Spin, Pagination } from 'antd';
 import { Link } from 'react-router-dom';
 import {
     CalendarOutlined,
@@ -11,26 +11,40 @@ import {
 import { getArticleList_request } from 'api/request';
 import './index.scss';
 
+const PAGE_SIZE = 5;
+
 const Index = (props) => {
 
     const { type, match: { path }, description } = props;
 
     const [list, setList] = useState([]);
+    const [total, setTotal] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         let mounted = true;
         setLoading(true);
-        getArticleList_request({ type }).then((res) => {
+        getArticleList_request({
+            type,
+            pageNum: String(currentPage),
+            pageSize: String(PAGE_SIZE)
+        }).then((res) => {
             if (!mounted) return;
             if (res?.meta?.code === 0) {
                 setList(res.data || []);
+                setTotal(res.total || 0);
             }
         }).catch(() => {}).finally(() => {
             if (mounted) setLoading(false);
         });
         return () => { mounted = false; };
-    }, [type]);
+    }, [type, currentPage]);
+
+    const onPageChange = (page) => {
+        setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     // 类型标签颜色映射
 const typeColorMap = {
@@ -51,7 +65,7 @@ const typeColorMap = {
         <div className='list-header'>
             <FileTextOutlined className='list-header-icon' />
             <h2 className='list-header-title'>文章列表</h2>
-            <span className='list-header-count'>共 {list.length} 篇</span>
+            <span className='list-header-count'>共 {total} 篇</span>
         </div>
 
         <Spin spinning={loading}>
@@ -82,6 +96,21 @@ const typeColorMap = {
                     </List.Item>
                 )}
             />
+
+            {/* 分页器 */}
+            {total > PAGE_SIZE && (
+                <div className='pagination-wrapper'>
+                    <Pagination
+                        current={currentPage}
+                        total={total}
+                        pageSize={PAGE_SIZE}
+                        onChange={onPageChange}
+                        showSizeChanger={false}
+                        showQuickJumper
+                        showTotal={(t, range) => `第 ${range[0]}-${range[1]} 篇 / 共 ${t} 篇`}
+                    />
+                </div>
+            )}
         </Spin>
     </div>
 }

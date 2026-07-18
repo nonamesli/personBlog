@@ -19,7 +19,7 @@ const Index = (props) => {
                 setArticleMsg(res.data[0]);
             }
         });
-    }, []);
+    }, [id]);
 
     let getPathList = (pageType) => {
         switch(pageType) {

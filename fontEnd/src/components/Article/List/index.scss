@@ -227,4 +227,77 @@
             }
         }
     }
+
+    /* ===== 分页器 ===== */
+    .pagination-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-top: 32px;
+        padding: 20px 0;
+
+        :global(.ant-pagination) {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+            .ant-pagination-item {
+                border-radius: 8px;
+                transition: all 0.2s ease;
+
+                &:hover {
+                    border-color: #6366f1;
+
+                    a {
+                        color: #6366f1;
+                    }
+                }
+
+                &-active {
+                    background: #6366f1;
+                    border-color: #6366f1;
+
+                    a {
+                        color: #fff;
+                    }
+                }
+            }
+
+            .ant-pagination-prev,
+            .ant-pagination-next {
+                border-radius: 8px;
+                transition: all 0.2s ease;
+
+                &:hover {
+                    border-color: #6366f1;
+
+                    a {
+                        color: #6366f1;
+                    }
+                }
+
+                .ant-pagination-item-link {
+                    border-radius: 7px;
+                }
+            }
+
+            .ant-pagination-options-quick-jumper {
+                color: #9ca3af;
+                font-size: 13px;
+
+                input {
+                    border-radius: 6px;
+                    width: 50px;
+                    text-align: center;
+
+                    &:focus,
+                    &:hover {
+                        border-color: #6366f1;
+                    }
+                }
+            }
+
+            .ant-pagination-total-text {
+                color: #9ca3af;
+                font-size: 13px;
+            }
+        }
+    }
 }

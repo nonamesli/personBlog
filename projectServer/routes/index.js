@@ -1,7 +1,7 @@
 let express = require('express');
 var router = express.Router();
 let connection = require('../mysql/connect');
-let { searchTableSql, searchTableTotalSql, searchArticleListByType, searchArticleDetailById, addArticle, getRouterConfig, getLatestArticles, updateArticleContent, getPrevArticle, getNextArticle } = require('../mysql/sql');
+let { searchTableSql, searchTableTotalSql, searchArticleListByType, searchArticleDetailById, addArticle, getRouterConfig, getLatestArticles, updateArticleContent, getPrevArticle, getNextArticle, countArticleByType } = require('../mysql/sql');
 
 //路由
 router.get('/api/getRouterConfig', function (req, res, next) {
@@ -64,19 +64,29 @@ router.get('/api/users', function (req, res, next) {
 });
 
 /**
- * 获取文章列表接口
+ * 获取文章列表接口（支持分页）
  */
 router.get('/api/getArticleList', function (req, res, next) {
-  let { type } = req.query;
-  connection.query(searchArticleListByType, [type], function (err, results) {
-    let obj = {
-      data: results,
-      meta: {
-        code: 0
-      }
+  let { type, pageNum = '1', pageSize = '10' } = req.query;
+  const page = Number(pageNum);
+  const size = Number(pageSize);
+  const offset = (page - 1) * size;
+
+  connection.query(searchArticleListByType, [type, offset, size], function (err, results) {
+    if (err) {
+      res.send({ data: [], meta: { code: 1, msg: err.message } });
+      return;
     }
-    res.send(obj);
-  })
+    // 查询总数
+    connection.query(countArticleByType, [type], function (err2, countRes) {
+      const total = countRes[0]?.total || 0;
+      res.send({
+        data: results,
+        total,
+        meta: { code: 0 }
+      });
+    });
+  });
 })
 
 

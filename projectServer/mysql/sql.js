@@ -27,10 +27,14 @@ exports.getPrevArticle = 'select id, title from article where id < ? order by id
 exports.getNextArticle = 'select id, title from article where id > ? order by id asc limit 1';
 
 /**
- * 查询整个文章列表
+ * 查询整个文章列表（分页）
  */
+exports.searchArticleListByType = 'select * from article where type = ? order by id desc limit ?, ?';
 
-exports.searchArticleListByType = 'select * from article where type= ?';
+/**
+ * 统计文章数量
+ */
+exports.countArticleByType = 'select count(*) as total from article where type = ?';
 
 /**
  * 新增文章
