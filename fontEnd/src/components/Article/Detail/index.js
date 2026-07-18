@@ -73,15 +73,11 @@ const Index = (props) => {
         <div className='footer'>
             <span>
                 <span>提交人：</span>
-                <span>lzd</span>
+                <span>{articleMsg?.submiter}</span>
             </span>
             <span>
                 <span>提交时间：</span>
-                <span>2021-10-01</span>
-            </span>
-            <span>
-                <span>修改时间：</span>
-                <span>2021-10-02</span>
+                <span>{articleMsg?.submitTime}</span>
             </span>
         </div>
     </div>
