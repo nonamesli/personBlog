@@ -174,7 +174,6 @@ const Index = () => {
                         <Form.Item
                             name='author'
                             label='作者'
-                            initialValue='青春的脚步'
                         >
                             <Input size='large' placeholder='作者名称' />
                         </Form.Item>

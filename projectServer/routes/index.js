@@ -1,7 +1,7 @@
 let express = require('express');
 var router = express.Router();
 let connection = require('../mysql/connect');
-let { searchTableSql, searchTableTotalSql, searchArticleListByType, searchArticleDetailById, addArticle, getRouterConfig, getLatestArticles, updateArticleContent } = require('../mysql/sql');
+let { searchTableSql, searchTableTotalSql, searchArticleListByType, searchArticleDetailById, addArticle, getRouterConfig, getLatestArticles, updateArticleContent, getPrevArticle, getNextArticle } = require('../mysql/sql');
 
 //路由
 router.get('/api/getRouterConfig', function (req, res, next) {
@@ -87,13 +87,22 @@ router.get('/api/getArticleList', function (req, res, next) {
 router.get('/api/getArticleDetailById', function (req, res, next) {
   let { id } = req.query;
   connection.query(searchArticleDetailById, [id], function (err, results) {
-    let obj = {
-      data: results,
-      meta: {
-        code: 0
-      }
+    if (err || !results.length) {
+      res.send({ data: [], meta: { code: 1 } });
+      return;
     }
-    res.send(obj);
+    // 查询上一篇和下一篇
+    connection.query(getPrevArticle, [id], function (err1, prev) {
+      connection.query(getNextArticle, [id], function (err2, next) {
+        let article = results[0];
+        article.prevArticle = prev[0] || null;
+        article.nextArticle = next[0] || null;
+        res.send({
+          data: [article],
+          meta: { code: 0 }
+        });
+      });
+    });
   })
 })
 

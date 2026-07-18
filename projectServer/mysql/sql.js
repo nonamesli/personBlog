@@ -17,6 +17,16 @@ exports.searchTableTotalSql = 'select count(*) from city';
 exports.searchArticleDetailById = 'select * from article where id = ?';
 
 /**
+ * 查询上一篇文章（id小于当前文章的最大值）
+ */
+exports.getPrevArticle = 'select id, title from article where id < ? order by id desc limit 1';
+
+/**
+ * 查询下一篇文章（id大于当前文章的最小值）
+ */
+exports.getNextArticle = 'select id, title from article where id > ? order by id asc limit 1';
+
+/**
  * 查询整个文章列表
  */
 

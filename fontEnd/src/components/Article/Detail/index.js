@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { getArticleDetailById_request } from 'api/request';
 import { withRouter } from 'react-router-dom';
 import BreadCrumb from 'components/BreadCrumb';
@@ -70,6 +71,25 @@ const Index = (props) => {
         <BreadCrumb pathList={getPathList(pageType)}/>
         <div className='title'>{articleMsg?.title}</div>
         <div dangerouslySetInnerHTML={{ __html: articleMsg?.content }}></div>
+        
+        {/* 上一篇 / 下一篇 导航 */}
+        {(articleMsg?.prevArticle || articleMsg?.nextArticle) && (
+            <div className='article-nav'>
+                {articleMsg?.prevArticle && (
+                    <Link to={`/${pageType}/article/${articleMsg.prevArticle.id}`} className='nav-item nav-prev'>
+                        <span className='nav-label'>← 上一篇</span>
+                        <span className='nav-title'>{articleMsg.prevArticle.title}</span>
+                    </Link>
+                )}
+                {articleMsg?.nextArticle && (
+                    <Link to={`/${pageType}/article/${articleMsg.nextArticle.id}`} className='nav-item nav-next'>
+                        <span className='nav-label'>下一篇 →</span>
+                        <span className='nav-title'>{articleMsg.nextArticle.title}</span>
+                    </Link>
+                )}
+            </div>
+        )}
+
         <div className='footer'>
             <span>
                 <span>提交人：</span>
