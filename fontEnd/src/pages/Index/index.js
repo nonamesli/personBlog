@@ -40,10 +40,16 @@ const config = [
 
 // 文章类型 -> 栏目 slug 映射（避免 URL 出现中文；Detail 面包屑只识别 slug）
 const TYPE_SLUG = {
-    '技术': 'tech', 'tech': 'tech',
-    '生活': 'live', 'live': 'live',
-    '留言': 'guestbook', 'guestbook': 'guestbook',
-    '个人简介': 'concat', 'concat': 'concat'
+    '技术': 'tech', 
+    'tech': 'tech',
+    '1': 'tech',
+    '生活': 'live', 
+    'live': 'live',
+    '2': 'live',
+    '留言': 'guestbook', 
+    'guestbook': 'guestbook',
+    '个人简介': 'concat', 
+    'concat': 'concat'
 };
 
 const Index = () => {
