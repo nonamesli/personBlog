@@ -32,6 +32,10 @@ def log_error(msg):
     print(f"[ERROR] {msg}")
 
 
+def log_warning(msg):
+    print(f"[WARNING] {msg}")
+
+
 def upload_files(sftp, client, local_dir, remote_base):
     """Upload all files from local_dir to remote_base"""
     all_files = []
