@@ -27,6 +27,14 @@ const Index = (props) => {
         });
     }, [id]);
 
+    useEffect(() => {
+        const onStorage = () => {
+            setCurrentUser(getUserInfo());
+        };
+        window.addEventListener('storage', onStorage);
+        return () => window.removeEventListener('storage', onStorage);
+    }, []);
+
     const isOwner = currentUser && articleMsg && Number(currentUser.id) === Number(articleMsg.user_id);
     const isAdmin = currentUser?.role === 'admin';
     const canEdit = isOwner || isAdmin;
