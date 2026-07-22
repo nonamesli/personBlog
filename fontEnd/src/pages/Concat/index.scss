@@ -379,6 +379,46 @@
             .header-avatar-col {
                 margin-bottom: 16px;
             }
+
+            .header-main {
+                text-align: center;
+                margin-bottom: 16px;
+            }
+
+            .resume-name {
+                font-size: 24px !important;
+            }
+
+            .resume-title {
+                font-size: 14px;
+            }
+
+            .contact-item {
+                font-size: 13px;
+            }
+        }
+
+        .resume-section-card {
+            .resume-section-title {
+                margin-bottom: 16px;
+
+                .section-icon {
+                    width: 28px;
+                    height: 28px;
+                    font-size: 14px;
+                }
+
+                .section-text {
+                    font-size: 15px;
+                }
+            }
+        }
+
+        .intent-row {
+            .intent-label,
+            .intent-value {
+                font-size: 13px;
+            }
         }
 
         .work-list-container {
@@ -391,16 +431,125 @@
             }
 
             .work-card {
-                padding: 18px;
+                padding: 16px;
 
                 .work-card-header {
                     flex-direction: column;
                     gap: 8px;
+                    margin-bottom: 12px;
+                    padding-bottom: 12px;
+
+                    .work-title-group {
+                        gap: 8px;
+                    }
+
+                    .work-company {
+                        font-size: 15px;
+                    }
 
                     .work-period {
                         align-self: flex-start;
                     }
                 }
+
+                .work-meta {
+                    gap: 10px;
+                    margin-bottom: 12px;
+                    padding-bottom: 12px;
+
+                    .work-meta-item {
+                        font-size: 13px;
+                        line-height: 1.7;
+                    }
+                }
+
+                .work-block {
+                    font-size: 13px;
+                    margin-bottom: 12px;
+
+                    .work-desc-list {
+                        padding-left: 18px;
+
+                        li {
+                            margin-bottom: 4px;
+                        }
+                    }
+                }
+            }
+        }
+
+        .contribution-list {
+            li {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+        }
+
+        .skill-groups {
+            .skill-group {
+                gap: 8px;
+                margin-bottom: 12px;
+
+                .skill-category {
+                    min-width: 72px;
+                    font-size: 13px;
+                    line-height: 26px;
+                }
+
+                .skill-tag {
+                    font-size: 12px;
+                    padding: 3px 10px;
+                }
+            }
+        }
+
+        .evaluation-list {
+            padding-left: 18px;
+
+            li {
+                font-size: 13px;
+            }
+        }
+    }
+}
+
+@media (max-width: 576px) {
+    .resume-page {
+        padding: 12px 10px 32px;
+
+        .resume-header-card {
+            .resume-avatar {
+                width: 88px !important;
+                height: 88px !important;
+                line-height: 88px !important;
+                font-size: 40px !important;
+            }
+
+            .resume-name {
+                font-size: 22px !important;
+            }
+        }
+
+        .work-list-container {
+            .work-timeline-side {
+                width: 20px;
+                padding-top: 18px;
+
+                .work-dot {
+                    width: 10px;
+                    height: 10px;
+                    border-width: 2px;
+                }
+            }
+
+            .work-content {
+                padding-left: 10px;
+                padding-bottom: 20px;
+            }
+
+            .work-card {
+                padding: 14px;
+                border-radius: 12px;
             }
         }
     }

@@ -27,3 +27,23 @@
         }
     }
 }
+
+@media (max-width: 576px) {
+    .login-page {
+        padding: 24px 16px;
+        align-items: flex-start;
+        padding-top: 60px;
+
+        .login-card {
+            border-radius: 10px;
+        }
+
+        .login-header {
+            margin-bottom: 16px;
+
+            h3 {
+                font-size: 22px;
+            }
+        }
+    }
+}

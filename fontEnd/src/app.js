@@ -1,10 +1,10 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { Layout, Button, Avatar, Dropdown, Menu, message, Tag } from 'antd';
+import { Layout, Button, Avatar, Dropdown, Menu, message, Tag, Drawer } from 'antd';
 import ErrorBoundary from 'components/ErrorBoundary';
 import ChangePasswordModal from 'components/ChangePassword';
 import { BrowserRouter as Router, Route, Switch, Link, useHistory } from 'react-router-dom';
-import { EditOutlined, UserOutlined } from '@ant-design/icons';
+import { EditOutlined, UserOutlined, MenuOutlined } from '@ant-design/icons';
 import { getUserInfo, isLogin, clearAuth } from 'utils/auth';
 import './index.scss';
 
@@ -52,11 +52,11 @@ const HeaderUser = () => {
     if (!login) {
         return (
             <div className='header-right'>
-                <Link to='/write' className='header-write-btn'>
+                <Link to='/write' className='header-write-btn anonymous-write'>
                     <EditOutlined />
                     <span>写文章</span>
                 </Link>
-                <Button type='primary' ghost onClick={() => history.push('/login')}>
+                <Button className='header-login-btn' type='primary' ghost onClick={() => history.push('/login')}>
                     登录 / 注册
                 </Button>
             </div>
@@ -81,13 +81,40 @@ const HeaderUser = () => {
     );
 };
 
+const navItems = [
+    { title: '首页', path: '/' },
+    { title: '技术', path: '/tech' },
+    { title: '生活', path: '/live' },
+    { title: '雁过留声', path: '/guestbook' },
+    { title: '个人简介', path: '/concat' },
+];
+
 const App = () => {
+    const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     return <Suspense fallback={<div>loading...</div>}><Router>
         <Layout>
             <Header>
                 <div className='header-inner'>
                     <Link to='/'><span className='logo-title'>青春的脚步的博客</span></Link>
-                    <HeaderUser />
+                    <div className='header-right'>
+                        {isMobile && (
+                            <Button
+                                type='text'
+                                className='mobile-menu-btn'
+                                icon={<MenuOutlined />}
+                                onClick={() => setMobileMenuVisible(true)}
+                            />
+                        )}
+                        <HeaderUser />
+                    </div>
                 </div>
             </Header>
             <Content>
@@ -105,8 +132,25 @@ const App = () => {
                     </Switch>
                 </ErrorBoundary>
             </Content>
-            <Footer>footer</Footer>
+            <Footer className='app-footer'>© 青春的脚步的博客</Footer>
         </Layout>
+        <Drawer
+            title='菜单'
+            placement='left'
+            closable={true}
+            onClose={() => setMobileMenuVisible(false)}
+            visible={mobileMenuVisible}
+            className='mobile-nav-drawer'
+            bodyStyle={{ padding: 0 }}
+        >
+            <Menu mode='inline' onClick={() => setMobileMenuVisible(false)}>
+                {navItems.map(item => (
+                    <Menu.Item key={item.path}>
+                        <Link to={item.path}>{item.title}</Link>
+                    </Menu.Item>
+                ))}
+            </Menu>
+        </Drawer>
     </Router>
     </Suspense>
 }

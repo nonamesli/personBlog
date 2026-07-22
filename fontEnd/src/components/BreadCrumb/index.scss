@@ -31,3 +31,23 @@
         }
     }
 }
+
+@media (max-width: 576px) {
+    .breadcrumb-box {
+        padding: 12px 0 14px;
+
+        .title {
+            font-size: 12px;
+            margin-right: 4px;
+        }
+
+        .path {
+            font-size: 12px;
+        }
+
+        .index-path,
+        .hover-path {
+            padding: 2px 4px;
+        }
+    }
+}

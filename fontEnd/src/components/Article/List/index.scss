@@ -75,7 +75,7 @@
 
         :global(.ant-list-item-meta),
         :global(.ant-list-item-action) {
-            display: none;           // 隐藏 antd 自带的结构
+            display: none; // 隐藏 antd 自带的结构
         }
 
         .article-card-link {
@@ -89,7 +89,7 @@
             text-decoration: none;
             transition: all 0.25s ease;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-            box-sizing: border-box;   // 确保 padding 不撑破宽度
+            box-sizing: border-box; // 确保 padding 不撑破宽度
 
             &:hover {
                 border-color: #a5b4fc;
@@ -178,12 +178,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 110px;              // 固定宽度，所有卡片右侧对齐一致
-            min-width: 110px;          // 防止被压缩
+            width: 110px; // 固定宽度，所有卡片右侧对齐一致
+            min-width: 110px; // 防止被压缩
             margin-left: 20px;
             padding-left: 20px;
             border-left: 2px solid #f3f4f6;
-            flex-shrink: 0;            // 不参与缩放，始终保持固定尺寸
+            flex-shrink: 0; // 不参与缩放，始终保持固定尺寸
         }
 
         .read-more {
@@ -207,6 +207,35 @@
     }
 
     /* 响应式 */
+    @media (max-width: 768px) {
+        .category-desc-banner {
+            padding: 16px 18px;
+            margin-bottom: 20px;
+
+            .category-desc-text {
+                font-size: 13px;
+                line-height: 1.8;
+            }
+        }
+
+        .list-header {
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+
+            .list-header-icon {
+                font-size: 20px;
+            }
+
+            .list-header-title {
+                font-size: 18px;
+            }
+
+            .list-header-count {
+                font-size: 12px;
+            }
+        }
+    }
+
     @media (max-width: 640px) {
         padding: 20px 16px;
 
@@ -224,6 +253,46 @@
                 justify-content: flex-end;
                 padding-top: 12px;
                 margin-top: 12px;
+            }
+        }
+    }
+
+    @media (max-width: 576px) {
+        padding: 16px 12px;
+
+        .list-header {
+            gap: 8px;
+        }
+
+        .article-card {
+            .article-card-link {
+                padding: 14px 16px;
+            }
+
+            .article-title {
+                font-size: 15px;
+                white-space: normal;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+            }
+
+            .article-desc {
+                font-size: 13px;
+                -webkit-line-clamp: 2;
+            }
+
+            .article-meta {
+                gap: 4px;
+
+                .meta-item {
+                    font-size: 12px;
+                }
+            }
+
+            .read-more {
+                font-size: 12px;
+                padding: 6px 12px;
             }
         }
     }
@@ -297,6 +366,25 @@
             .ant-pagination-total-text {
                 color: #9ca3af;
                 font-size: 13px;
+            }
+        }
+    }
+}
+
+@media (max-width: 576px) {
+    .article-list-page .pagination-wrapper {
+        :global(.ant-pagination) {
+
+            .ant-pagination-options,
+            .ant-pagination-total-text {
+                display: none;
+            }
+
+            .ant-pagination-item {
+                min-width: 28px;
+                height: 28px;
+                line-height: 26px;
+                font-size: 12px;
             }
         }
     }
