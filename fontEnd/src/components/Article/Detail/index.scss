@@ -2,13 +2,50 @@
     padding: 24px;
     position: relative;
     min-height: calc(100vh - 64px - 70px);
-    .title {
-        height: 60px;
-        line-height: 60px;
-        font-size: 20px;
-        font-weight: bold;
+
+    .article-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+
+        .title {
+            flex: 1;
+            min-width: 200px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 2px;
+            line-height: 1.4;
+        }
+
+        .article-actions {
+            flex-shrink: 0;
+        }
+    }
+
+    .article-private-tip {
         text-align: center;
-        letter-spacing: 2px;
+        padding: 80px 20px;
+
+        .private-icon {
+            font-size: 48px;
+            color: #faad14;
+            margin-bottom: 16px;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        p {
+            color: #888;
+            margin-bottom: 24px;
+        }
     }
 
     /* ===== 富文本内容样式 ===== */

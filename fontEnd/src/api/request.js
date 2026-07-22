@@ -49,3 +49,56 @@ export const getLatestArticles_request = (params) => {
         params
     });
 }
+
+// 用户登录
+export const login_request = (data) => {
+    return http({
+        url: '/api/login',
+        method: 'post',
+        data
+    });
+}
+
+// 用户注册
+export const register_request = (data) => {
+    return http({
+        url: '/api/register',
+        method: 'post',
+        data
+    });
+}
+
+// 获取当前用户信息
+export const getUserInfo_request = () => {
+    return http({
+        url: '/api/getUserInfo',
+        method: 'get'
+    });
+}
+
+// 修改密码
+export const changePassword_request = (data) => {
+    return http({
+        url: '/api/changePassword',
+        method: 'post',
+        data
+    });
+}
+
+// 更新文章
+export const updateArticle_request = (data) => {
+    return http({
+        url: '/api/updateArticle',
+        method: 'post',
+        data
+    });
+}
+
+// 删除文章
+export const deleteArticle_request = (data) => {
+    return http({
+        url: '/api/deleteArticle',
+        method: 'post',
+        data
+    });
+}

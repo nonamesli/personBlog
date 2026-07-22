@@ -2,27 +2,37 @@ import axios from "axios";
 
 const http = axios.create({
     baseURL: '/',
-    timeout: 1000,
+    timeout: 10000,
     withCredentials: true
 });
 
 // 添加请求拦截器
 http.interceptors.request.use(function (config) {
-    // 在发送请求之前做些什么
-    console.log('准备发送请求');
+    const token = localStorage.getItem('token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
 }, function (error) {
-    // 对请求错误做些什么
     return Promise.reject(error);
 });
 
 // 添加响应拦截器
 http.interceptors.response.use(function (response) {
-    // 对响应数据做点什么
-    console.log('已接受到数据');
-    return response?.data;
+    // 登录过期统一处理
+    const data = response?.data;
+    if (data?.meta?.code === 401) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userInfo');
+        window.location.href = '/login';
+    }
+    return data;
 }, function (error) {
-    // 对响应错误做点什么
+    if (error.response?.status === 401) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userInfo');
+        window.location.href = '/login';
+    }
     return Promise.reject(error);
 });
 

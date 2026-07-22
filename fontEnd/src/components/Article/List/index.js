@@ -9,6 +9,7 @@ import {
     FileTextOutlined
 } from '@ant-design/icons';
 import { getArticleList_request } from 'api/request';
+import { getUserInfo } from 'utils/auth';
 import './index.scss';
 
 const PAGE_SIZE = 5;
@@ -21,6 +22,9 @@ const Index = (props) => {
     const [total, setTotal] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [loading, setLoading] = useState(true);
+
+    const currentUser = getUserInfo();
+    const isAdmin = currentUser?.role === 'admin';
 
     useEffect(() => {
         let mounted = true;
@@ -35,7 +39,7 @@ const Index = (props) => {
                 setList(res.data || []);
                 setTotal(res.total || 0);
             }
-        }).catch(() => {}).finally(() => {
+        }).catch(() => { }).finally(() => {
             if (mounted) setLoading(false);
         });
         return () => { mounted = false; };
@@ -47,11 +51,11 @@ const Index = (props) => {
     };
 
     // 类型标签颜色映射
-const typeColorMap = {
-    '1': 'processing',   // tech -> 蓝
-    '2': 'success',     // live -> 绿
-    '4': 'purple'       // guestbook -> 紫
-};
+    const typeColorMap = {
+        '1': 'processing',   // tech -> 蓝
+        '2': 'success',     // live -> 绿
+        '4': 'purple'       // guestbook -> 紫
+    };
 
     return <div className='article-list-page'>
         {/* 栏目描述区 */}
@@ -73,28 +77,36 @@ const typeColorMap = {
                 className='article-list'
                 dataSource={list}
                 locale={{ emptyText: <Empty description='暂无文章，敬请期待' /> }}
-                renderItem={item => (
-                    <List.Item className='article-card'>
-                        <Link to={`${path}/article/${item.id}`} className='article-card-link'>
-                            <div className='article-card-body'>
-                                <h3 className='article-title'>{item.title}</h3>
-                                <p className='article-desc'>{item.description}</p>
-                                <div className='article-meta'>
-                                    <span className='meta-item'><UserOutlined /> {item.author || '青春的脚步'}</span>
-                                    <span className='meta-divider'>·</span>
-                                    <span className='meta-item'><CalendarOutlined /> {item.submitTime || item.time || ''}</span>
-                                    <span className='meta-divider'>·</span>
-                                    <Tag color={typeColorMap[type] || 'default'} className='meta-tag'>
-                                        {type === '1' ? '技术' : type === '2' ? '生活' : item.type}
-                                    </Tag>
+                renderItem={item => {
+                    const isMyArticle = currentUser && Number(item.user_id) === Number(currentUser.id);
+                    return (
+                        <List.Item className='article-card'>
+                            <Link to={`${path}/article/${item.id}`} className='article-card-link'>
+                                <div className='article-card-body'>
+                                    <h3 className='article-title'>
+                                        {item.title}
+                                        {item.is_public === 0 && <Tag color='warning' style={{ marginLeft: 8 }}>非公开</Tag>}
+                                        {isAdmin && !isMyArticle && <Tag color='blue' style={{ marginLeft: 8 }}>他人</Tag>}
+                                        {isMyArticle && <Tag color='purple' style={{ marginLeft: 8 }}>我的</Tag>}
+                                    </h3>
+                                    <p className='article-desc'>{item.description}</p>
+                                    <div className='article-meta'>
+                                        <span className='meta-item'><UserOutlined /> {item.author || item.submiter || '青春的脚步'}</span>
+                                        <span className='meta-divider'>·</span>
+                                        <span className='meta-item'><CalendarOutlined /> {item.submitTime || item.time || ''}</span>
+                                        <span className='meta-divider'>·</span>
+                                        <Tag color={typeColorMap[type] || 'default'} className='meta-tag'>
+                                            {type === '1' ? '技术' : type === '2' ? '生活' : item.type}
+                                        </Tag>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className='article-card-action'>
-                                <span className='read-more'>阅读全文 <ArrowRightOutlined /></span>
-                            </div>
-                        </Link>
-                    </List.Item>
-                )}
+                                <div className='article-card-action'>
+                                    <span className='read-more'>阅读全文 <ArrowRightOutlined /></span>
+                                </div>
+                            </Link>
+                        </List.Item>
+                    );
+                }}
             />
 
             {/* 分页器 */}

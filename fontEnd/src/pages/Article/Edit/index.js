@@ -9,15 +9,16 @@ import {
     Space,
     Tag,
     Switch,
-    Alert
+    Alert,
+    Spin
 } from 'antd';
-import { addArticle_request } from 'api/request';
+import { getArticleDetailById_request, updateArticle_request } from 'api/request';
 import BreadCrumb from 'components/BreadCrumb';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import {
     EditOutlined,
-    SendOutlined,
-    ClearOutlined,
+    SaveOutlined,
+    RollbackOutlined,
     CodeOutlined,
     HeartOutlined,
 } from '@ant-design/icons';
@@ -33,11 +34,6 @@ const { Title } = Typography;
 const TYPE_OPTIONS = [
     { value: '1', label: '技术', icon: <CodeOutlined />, color: '#6366f1', slug: 'tech' },
     { value: '2', label: '生活', icon: <HeartOutlined />, color: '#10b981', slug: 'live' },
-];
-
-let pathList = [
-    { name: '首页', path: '/' },
-    { name: '写文章', path: '/write' },
 ];
 
 // 编辑器工具栏配置
@@ -74,26 +70,62 @@ const editorConfig = {
     placeholder: '开始撰写你的文章...',
 };
 
-const Index = () => {
-
+const EditArticle = () => {
     const [form] = Form.useForm();
+    const { id } = useParams();
+    const history = useHistory();
     const [submitting, setSubmitting] = useState(false);
     const [selectedType, setSelectedType] = useState('1');
     const [htmlContent, setHtmlContent] = useState('');
     const [isPublic, setIsPublic] = useState(true);
-    const [login, setLogin] = useState(true);
-    const history = useHistory();
+    const [loading, setLoading] = useState(true);
+    const [article, setArticle] = useState(null);
+    const [isOwner, setIsOwner] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     // 编辑器实例引用
     const [editor, setEditor] = useState(null);
 
     useEffect(() => {
         if (!isLogin()) {
-            setLogin(false);
             message.warning('请先登录');
             history.replace('/login');
+            return;
         }
-    }, [form, history]);
+        const currentUser = getUserInfo();
+        const adminFlag = currentUser?.role === 'admin';
+        setIsAdmin(adminFlag);
+
+        setLoading(true);
+        getArticleDetailById_request({ id }).then((res) => {
+            if (res?.meta?.code === 0 && res.data?.[0]) {
+                const data = res.data[0];
+                const ownerFlag = Number(data.user_id) === Number(currentUser?.id);
+                if (!ownerFlag && !adminFlag) {
+                    message.warning('没有权限编辑该文章');
+                    history.replace('/');
+                    return;
+                }
+                setArticle(data);
+                setIsOwner(ownerFlag);
+                setSelectedType(String(data.type));
+                setIsPublic(data.is_public === 1 || data.is_public === undefined);
+                setHtmlContent(data.content || '');
+                form.setFieldsValue({
+                    title: data.title,
+                    description: data.description,
+                    time: data.time,
+                });
+            } else {
+                message.error('文章不存在');
+                history.replace('/');
+            }
+        }).catch(() => {
+            message.error('加载文章失败');
+        }).finally(() => {
+            setLoading(false);
+        });
+    }, [id, form, history]);
 
     // 组件销毁时销毁编辑器
     useEffect(() => {
@@ -116,30 +148,21 @@ const Index = () => {
 
         try {
             const { description, ...rest } = values;
-            const res = await addArticle_request({
+            const res = await updateArticle_request({
+                id: Number(id),
                 ...rest,
                 content: htmlContent,
                 desc: description,
                 type: selectedType,
-                submitTime: new Date().toLocaleDateString().replace(/\//g, '-'),
                 is_public: isPublic ? 1 : 0,
             });
 
             if (res?.meta?.code === 0) {
-                message.success('文章发布成功！');
-                // 获取新文章 ID 和类型对应的 slug
-                const articleId = res.data?.id;
+                message.success('文章更新成功！');
                 const typeSlug = TYPE_OPTIONS.find(t => t.value === selectedType)?.slug || 'tech';
-                if (articleId) {
-                    history.push(`/${typeSlug}/article/${articleId}`);
-                } else {
-                    form.resetFields();
-                    setHtmlContent('');
-                    setSelectedType('1');
-                    if (editor) editor.clear();
-                }
+                history.push(`/${typeSlug}/article/${id}`);
             } else {
-                message.error('发布失败，请重试');
+                message.error(res?.meta?.msg || '更新失败，请重试');
             }
         } catch {
             message.error('网络错误，请检查连接');
@@ -148,48 +171,53 @@ const Index = () => {
         }
     };
 
-    const handleReset = () => {
-        form.resetFields();
-        setHtmlContent('');
-        setSelectedType('1');
-        setIsPublic(true);
-        if (editor) editor.clear();
-    };
+    const pathList = [
+        { name: '首页', path: '/' },
+        { name: article?.title || '编辑文章', path: `/article/edit/${id}` },
+    ];
 
-    if (!login) {
+    if (loading) {
+        return <div className='article-edit-page'><Spin tip='加载中...' /></div>;
+    }
+
+    if (!isOwner && !isAdmin) {
         return (
-            <div className='article-add-page'>
+            <div className='article-edit-page'>
                 <Alert
-                    message='请先登录'
-                    description='发布文章需要先登录账号'
+                    message='没有权限'
+                    description='只有文章作者可以编辑该文章'
                     type='warning'
                     showIcon
-                    action={
-                        <Button type='primary' onClick={() => history.push('/login')}>
-                            去登录
-                        </Button>
-                    }
                 />
             </div>
         );
     }
 
     return (
-        <div className='article-add-page'>
+        <div className='article-edit-page'>
             <BreadCrumb pathList={pathList} />
 
             {/* 页面标题 */}
-            <div className='add-header'>
+            <div className='edit-header'>
                 <EditOutlined className='header-icon' />
-                <Title level={3} className='header-title'>撰写新文章</Title>
-                <p className='header-sub'>填写下方表单内容，发布你的新文章</p>
+                <Title level={3} className='header-title'>编辑文章</Title>
+                <p className='header-sub'>修改文章内容后保存</p>
+                {isAdmin && !isOwner && (
+                    <Alert
+                        style={{ marginTop: 16, textAlign: 'left' }}
+                        message='管理员正在编辑他人文章'
+                        description={`原作者：${article?.submiter || article?.author || '未知'}。保存后原作者信息保持不变。`}
+                        type='info'
+                        showIcon
+                    />
+                )}
             </div>
 
             {/* 表单主体 */}
             <Form
                 form={form}
                 layout='vertical'
-                className='add-form'
+                className='edit-form'
                 onFinish={handleFinish}
                 requiredMark={false}
             >
@@ -286,21 +314,21 @@ const Index = () => {
                         <Space size={16}>
                             <Button
                                 type='primary'
-                                icon={<SendOutlined />}
+                                icon={<SaveOutlined />}
                                 htmlType='submit'
                                 loading={submitting}
                                 className='btn-submit'
                                 size='large'
                             >
-                                发布文章
+                                保存修改
                             </Button>
                             <Button
-                                icon={<ClearOutlined />}
-                                onClick={handleReset}
+                                icon={<RollbackOutlined />}
+                                onClick={() => history.goBack()}
                                 size='large'
                                 className='btn-reset'
                             >
-                                重置清空
+                                返回
                             </Button>
                         </Space>
                         <Tag color='#6366f1' className='action-tip'><EditOutlined /> 富文本编辑</Tag>
@@ -311,4 +339,4 @@ const Index = () => {
     );
 };
 
-export default Index;
+export default EditArticle;

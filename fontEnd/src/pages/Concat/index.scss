@@ -1,102 +1,407 @@
-.about-page {
-    max-width: 720px;
+.resume-page {
+    max-width: 1100px;
     margin: 0 auto;
-    padding: 32px 24px 64px;
+    padding: 24px 24px 64px;
 
-    /* ===== 头部 ===== */
-    .about-header {
-        text-align: center;
-        padding: 32px 0 16px;
+    .resume-header-card {
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        margin-bottom: 20px;
 
-        .about-avatar {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            font-size: 40px;
-            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+        .header-avatar-col {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            .resume-avatar {
+                background: linear-gradient(135deg, #6366f1, #8b5cf6);
+                font-size: 56px;
+                box-shadow: 0 8px 28px rgba(99, 102, 241, 0.3);
+            }
+        }
+
+        .header-main {
             margin-bottom: 20px;
+
+            .resume-name {
+                margin-bottom: 6px !important;
+                font-weight: 700;
+                color: #1f2937;
+            }
+
+            .resume-title {
+                font-size: 16px;
+                color: #6366f1;
+                font-weight: 500;
+            }
         }
 
-        .about-name {
-            margin-bottom: 8px !important;
-            font-weight: 700;
-            color: #1f2937;
-        }
+        .contact-row {
+            .contact-item {
+                display: flex;
+                align-items: center;
+                font-size: 14px;
+                color: #4b5563;
+                line-height: 1.6;
 
-        .about-slogan {
-            font-size: 15px;
-            color: #9ca3af;
-        }
+                .contact-icon {
+                    color: #6366f1;
+                    margin-right: 8px;
+                    font-size: 15px;
+                }
 
-        .about-divider {
-            width: 60px !important;
-            min-width: 60px !important;
-            margin: 24px auto !important;
-            background: #a5b4fc;
-            height: 3px;
-            border-radius: 2px;
+                .contact-label {
+                    color: #9ca3af;
+                    margin-right: 4px;
+                }
+
+                .contact-value {
+                    color: #374151;
+                }
+
+                a.contact-value {
+                    color: #6366f1;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
         }
     }
 
-    /* ===== 内容区块 ===== */
-    .about-section {
-        background: #fff;
-        border: 1px solid #eef0f4;
-        border-radius: 14px;
-        padding: 28px;
-        margin-bottom: 24px;
+    .resume-section-card {
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        margin-bottom: 20px;
 
-        .section-title {
+        .resume-section-title {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 17px;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 18px;
+            margin-bottom: 20px;
 
-            .anticon {
-                color: #6366f1;
+            .section-icon {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+                background: linear-gradient(135deg, #6366f1, #8b5cf6);
+                color: #fff;
+                font-size: 16px;
+                margin-right: 10px;
+            }
+
+            .section-text {
+                font-size: 17px;
+                font-weight: 600;
+                color: #374151;
+                margin-right: 16px;
+                white-space: nowrap;
+            }
+
+            .section-divider {
+                flex: 1;
+                min-width: auto;
+                margin: 0 !important;
+                background: #e5e7eb;
             }
         }
     }
 
-    /* ===== 文字段落 ===== */
-    .about-intro {
-        color: #4b5563;
-        line-height: 2;
-        font-size: 15px;
-        text-indent: 2em;
-        margin-bottom: 12px;
+    /* 求职意向 */
+    .intent-row {
+        .intent-label {
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        .intent-value {
+            color: #374151;
+            font-size: 14px;
+            font-weight: 500;
+        }
     }
 
-    /* ===== 标签列表 ===== */
-    .tag-list {
-        .tag-item {
-            font-size: 13px;
-            padding: 6px 16px;
-            border-radius: 8px;
-            border: none;
-            display: inline-flex;
+    /* 工作经历 */
+    .work-list-container {
+        padding-top: 8px;
+
+        .work-item {
+            display: flex;
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .work-timeline-side {
+            width: 32px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 6px;
-            cursor: default;
-            transition: transform 0.2s ease;
+            padding-top: 24px;
+
+            .work-dot {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background: #6366f1;
+                border: 3px solid #e0e7ff;
+                flex-shrink: 0;
+            }
+
+            .work-line {
+                flex: 1;
+                width: 2px;
+                background: linear-gradient(to bottom, #e0e7ff, transparent);
+                margin: 8px 0;
+            }
+        }
+
+        .work-content {
+            flex: 1;
+            padding-left: 16px;
+            padding-bottom: 28px;
+
+            &:last-child {
+                padding-bottom: 0;
+            }
+        }
+
+        .work-card {
+            background: #fff;
+            border: 1px solid #f3f4f6;
+            border-radius: 16px;
+            padding: 22px 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+            transition: box-shadow 0.3s ease;
 
             &:hover {
-                transform: translateY(-2px);
+                box-shadow: 0 8px 28px rgba(99, 102, 241, 0.08);
+            }
+
+            .work-card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-bottom: 16px;
+                padding-bottom: 14px;
+                border-bottom: 1px dashed #e5e7eb;
+
+                .work-title-group {
+                    display: flex;
+                    flex-wrap: wrap;
+                    align-items: center;
+                    gap: 12px;
+
+                    .work-company {
+                        font-size: 17px;
+                        font-weight: 600;
+                        color: #1f2937;
+                    }
+
+                    .work-position {
+                        font-size: 13px;
+                        color: #6366f1;
+                        background: #eef2ff;
+                        padding: 3px 10px;
+                        border-radius: 6px;
+                    }
+                }
+
+                .work-period {
+                    font-size: 13px;
+                    color: #6366f1;
+                    font-weight: 500;
+                    white-space: nowrap;
+                    background: #f5f3ff;
+                    padding: 4px 12px;
+                    border-radius: 20px;
+                }
+            }
+
+            .work-meta {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 16px;
+                margin-bottom: 16px;
+                padding-bottom: 14px;
+                border-bottom: 1px solid #f3f4f6;
+
+                .work-meta-item {
+                    display: flex;
+                    align-items: flex-start;
+                    font-size: 14px;
+                    color: #4b5563;
+                    line-height: 1.8;
+
+                    .field-icon {
+                        color: #6366f1;
+                        margin-right: 6px;
+                        margin-top: 4px;
+                    }
+
+                    .field-label {
+                        color: #374151;
+                        font-weight: 500;
+                        margin-right: 6px;
+                        white-space: nowrap;
+                    }
+                }
+            }
+
+            .work-block {
+                margin-bottom: 14px;
+                font-size: 14px;
+                color: #4b5563;
+                line-height: 1.8;
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+
+                .field-icon {
+                    color: #6366f1;
+                    margin-right: 6px;
+                }
+
+                .field-label {
+                    color: #374151;
+                    font-weight: 600;
+                    margin-right: 6px;
+                }
+
+                .work-desc-list {
+                    margin: 8px 0 0 0;
+                    padding-left: 22px;
+
+                    li {
+                        margin-bottom: 6px;
+                        color: #4b5563;
+                        line-height: 1.7;
+
+                        &::marker {
+                            color: #6366f1;
+                        }
+                    }
+                }
+            }
+
+            .tech-tag {
+                font-size: 12px;
+                padding: 3px 10px;
+                border-radius: 6px;
+                color: #4b5563;
+                background: #f3f4f6;
+                border: 1px solid #e5e7eb;
             }
         }
     }
 
-    /* ===== 底部签名 ===== */
-    .about-footer {
-        text-align: center;
-        padding-top: 32px;
+    /* 项目贡献 */
+    .contribution-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
 
-        .footer-text {
-            font-size: 15px;
-            color: #a5b4fc;
-            letter-spacing: 2px;
-            font-style: italic;
+        li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            background: #fafafa;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #4b5563;
+            line-height: 1.7;
+
+            .contrib-icon {
+                color: #f59e0b;
+                font-size: 16px;
+                margin-top: 2px;
+                flex-shrink: 0;
+            }
+        }
+    }
+
+    /* 专业技能 */
+    .skill-groups {
+        .skill-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 14px;
+
+            .skill-category {
+                min-width: 80px;
+                font-size: 14px;
+                font-weight: 600;
+                color: #374151;
+                line-height: 28px;
+            }
+
+            .skill-tag {
+                font-size: 13px;
+                padding: 4px 12px;
+                border-radius: 8px;
+                color: #4b5563;
+                background: #f3f4f6;
+                border: 1px solid #e5e7eb;
+            }
+        }
+    }
+
+    /* 自我评价 */
+    .evaluation-list {
+        margin: 0;
+        padding-left: 20px;
+
+        li {
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #4b5563;
+            line-height: 1.8;
+        }
+    }
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .resume-page {
+        padding: 16px 12px 40px;
+
+        .resume-header-card {
+            .header-avatar-col {
+                margin-bottom: 16px;
+            }
+        }
+
+        .work-list-container {
+            .work-timeline-side {
+                width: 24px;
+            }
+
+            .work-content {
+                padding-left: 12px;
+            }
+
+            .work-card {
+                padding: 18px;
+
+                .work-card-header {
+                    flex-direction: column;
+                    gap: 8px;
+
+                    .work-period {
+                        align-self: flex-start;
+                    }
+                }
+            }
         }
     }
 }
