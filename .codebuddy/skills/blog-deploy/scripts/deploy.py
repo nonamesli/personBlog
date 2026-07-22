@@ -101,7 +101,13 @@ def install_and_start_service(client):
 
     # Step 2: Stop existing service (if running)
     log_info("Checking for existing service...")
-    _, stdout, _ = client.exec_command(f'lsof -ti:{BACKEND_PORT}')
+
+    # Try fuser to kill directly, then verify with ss
+    _, _, _ = client.exec_command(f'fuser -k {BACKEND_PORT}/tcp 2>/dev/null')
+    time.sleep(2)
+
+    # Find pid by ss output as fallback
+    _, stdout, _ = client.exec_command(f'ss -tlnp | grep ":{BACKEND_PORT} " | sed "s/.*pid=\\([0-9]*\\).*/\\1/"')
     pid = stdout.read().decode().strip()
 
     if pid:
