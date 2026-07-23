@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { Layout, Button, Avatar, Dropdown, Menu, message, Tag, Drawer } from 'antd';
+import { Layout, Button, Avatar, Dropdown, Menu, message, Tag, Drawer, Skeleton } from 'antd';
 import ErrorBoundary from 'components/ErrorBoundary';
 import ChangePasswordModal from 'components/ChangePassword';
 import { BrowserRouter as Router, Route, Switch, Link, useHistory } from 'react-router-dom';
@@ -91,6 +91,22 @@ const navItems = [
     { title: '个人简介', path: '/concat' },
 ];
 
+const PageSkeleton = () => (
+    <div className='page-skeleton'>
+        <div className='skeleton-header' />
+        <div className='skeleton-content'>
+            <Skeleton active paragraph={{ rows: 0 }} title={{ width: '40%' }} />
+            <div className='skeleton-section'>
+                <Skeleton active avatar paragraph={{ rows: 3 }} />
+            </div>
+            <div className='skeleton-cards'>
+                <Skeleton active paragraph={{ rows: 2 }} />
+                <Skeleton active paragraph={{ rows: 2 }} />
+            </div>
+        </div>
+    </div>
+);
+
 const App = () => {
     const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -101,7 +117,7 @@ const App = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    return <Suspense fallback={<div>loading...</div>}><Router>
+    return <Suspense fallback={<PageSkeleton />}><Router>
         <Layout>
             <Header>
                 <div className='header-inner'>
