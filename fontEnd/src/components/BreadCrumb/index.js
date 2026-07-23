@@ -31,7 +31,7 @@ const routerConfig = [
                 ]
             },
             {
-                title: '雁过留声',
+                title: '留言',
                 path: '/guestbook',
                 children: []
             },
@@ -46,7 +46,7 @@ const routerConfig = [
 
 const Index = (props) => {
 
-    const { pathList=[] } = props;
+    const { pathList = [] } = props;
 
     const handleClick = (href) => {
         props.history.push(href);
@@ -72,10 +72,10 @@ const Index = (props) => {
 
     const renderItem = (list) => {
         let res = list.map((item, index) => {
-            if(index === list.length - 1) {
+            if (index === list.length - 1) {
                 return <span key={item.path}>{item.name}</span>
-            }else {
-                return <React.Fragment key={item.path}><span  className='hover-path' onClick={() => handleClick(item.path)}>{item.name}</span><span style={{margin: '0px 4px'}}>/</span></React.Fragment>
+            } else {
+                return <React.Fragment key={item.path}><span className='hover-path' onClick={() => handleClick(item.path)}>{item.name}</span><span style={{ margin: '0px 4px' }}>/</span></React.Fragment>
             }
         })
         return res;

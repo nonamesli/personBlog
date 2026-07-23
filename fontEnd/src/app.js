@@ -4,7 +4,7 @@ import { Layout, Button, Avatar, Dropdown, Menu, message, Tag, Drawer } from 'an
 import ErrorBoundary from 'components/ErrorBoundary';
 import ChangePasswordModal from 'components/ChangePassword';
 import { BrowserRouter as Router, Route, Switch, Link, useHistory } from 'react-router-dom';
-import { EditOutlined, UserOutlined, MenuOutlined } from '@ant-design/icons';
+import { PlusOutlined, UserOutlined, MenuOutlined } from '@ant-design/icons';
 import { getUserInfo, isLogin, clearAuth } from 'utils/auth';
 import './index.scss';
 
@@ -53,8 +53,9 @@ const HeaderUser = () => {
         return (
             <div className='header-right'>
                 <Link to='/write' className='header-write-btn anonymous-write'>
-                    <EditOutlined />
-                    <span>写文章</span>
+                    <PlusOutlined className='write-icon' />
+                    <span className='write-text'>写文章</span>
+                    <span className='mobile-write-text'>写</span>
                 </Link>
                 <Button className='header-login-btn' type='primary' ghost onClick={() => history.push('/login')}>
                     登录 / 注册
@@ -66,8 +67,9 @@ const HeaderUser = () => {
     return (
         <div className='header-right'>
             <Link to='/write' className='header-write-btn'>
-                <EditOutlined />
-                <span>写文章</span>
+                <PlusOutlined className='write-icon' />
+                <span className='write-text'>写文章</span>
+                <span className='mobile-write-text'>写</span>
             </Link>
             <Dropdown overlay={menu} placement='bottomRight'>
                 <div className='header-user'>
@@ -85,7 +87,7 @@ const navItems = [
     { title: '首页', path: '/' },
     { title: '技术', path: '/tech' },
     { title: '生活', path: '/live' },
-    { title: '雁过留声', path: '/guestbook' },
+    { title: '留言', path: '/guestbook' },
     { title: '个人简介', path: '/concat' },
 ];
 
@@ -103,7 +105,7 @@ const App = () => {
         <Layout>
             <Header>
                 <div className='header-inner'>
-                    <Link to='/'><span className='logo-title'>青春的脚步的博客</span></Link>
+                    <Link to='/'><span className='logo-title'>青春的脚步</span></Link>
                     <div className='header-right'>
                         {isMobile && (
                             <Button
@@ -137,9 +139,10 @@ const App = () => {
         <Drawer
             title='菜单'
             placement='left'
+            width={160}
             closable={true}
             onClose={() => setMobileMenuVisible(false)}
-            visible={mobileMenuVisible}
+            open={mobileMenuVisible}
             className='mobile-nav-drawer'
             bodyStyle={{ padding: 0 }}
         >

@@ -34,15 +34,15 @@
 
 @media (max-width: 576px) {
     .breadcrumb-box {
-        padding: 12px 0 14px;
+        padding: 10px 0 12px;
 
         .title {
-            font-size: 12px;
-            margin-right: 4px;
+            display: none;
         }
 
         .path {
             font-size: 12px;
+            color: #6b7280;
         }
 
         .index-path,

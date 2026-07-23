@@ -12,7 +12,7 @@ let pathList = [
         path: '/'
     },
     {
-        name: '雁过留声',
+        name: '留言',
         path: '/guestbook'
     }
 ];
