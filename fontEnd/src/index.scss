@@ -352,3 +352,25 @@ a {
         }
     }
 }
+
+// wangeditor 全屏模式层级高于固定头部
+.w-e-full-screen-container {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 1100 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+
+    .w-e-toolbar {
+        z-index: 1101 !important;
+    }
+
+    .w-e-text-container {
+        height: calc(100vh - 40px) !important;
+    }
+}
