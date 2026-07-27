@@ -171,8 +171,10 @@ const EditArticle = () => {
         }
     };
 
+    const typeOption = TYPE_OPTIONS.find(t => t.value === selectedType);
     const pathList = [
         { name: '首页', path: '/' },
+        { name: typeOption?.label || '文章', path: `/${typeOption?.slug || 'tech'}` },
         { name: article?.title || '编辑文章', path: `/article/edit/${id}` },
     ];
 
@@ -234,14 +236,13 @@ const EditArticle = () => {
                         <Input size='large' placeholder='请输入文章标题...' showCount maxLength={200} />
                     </Form.Item>
 
-                    {/* 文章类型（卡片式） */}
+                    {/* 文章类型（只读展示） */}
                     <Form.Item label='文章类型' required>
-                        <div className='type-select-group'>
+                        <div className='type-select-group type-select-group--readonly'>
                             {TYPE_OPTIONS.map(opt => (
                                 <div
                                     key={opt.value}
-                                    className={`type-option ${selectedType === opt.value ? 'type-option--active' : ''}`}
-                                    onClick={() => setSelectedType(opt.value)}
+                                    className={`type-option ${selectedType === opt.value ? 'type-option--active' : 'type-option--disabled'}`}
                                     style={{ '--accent-color': opt.color }}
                                 >
                                     <span className='type-option-icon'>{opt.icon}</span>
