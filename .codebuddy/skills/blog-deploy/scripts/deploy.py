@@ -13,6 +13,10 @@ BACKEND_REMOTE = f"{REMOTE_PATH}/projectServer"
 
 BACKEND_PORT = 3000
 
+# 部署模式开关（True=部署并启动后端，False=仅部署前端）
+DEPLOY_BACKEND = False
+AUTO_START_BACKEND = False
+
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.parent
 FRONTEND_DIST = PROJECT_ROOT / "fontEnd" / "dist"
 BACKEND_DIR = PROJECT_ROOT / "projectServer"
@@ -248,37 +252,48 @@ def main():
     frontend_count = upload_files(sftp, client, FRONTEND_DIST, FRONTEND_REMOTE)
     log_success(f"Frontend done! ({frontend_count} files)")
 
-    # Upload backend
-    log_info("\n[2/5] Uploading backend...")
-    backend_count = upload_files(sftp, client, BACKEND_DIR, BACKEND_REMOTE)
-    log_success(f"Backend done! ({backend_count} files)")
+    backend_count = 0
+    if DEPLOY_BACKEND:
+        # Upload backend
+        log_info("\n[2/5] Uploading backend...")
+        backend_count = upload_files(sftp, client, BACKEND_DIR, BACKEND_REMOTE)
+        log_success(f"Backend done! ({backend_count} files)")
 
     sftp.close()
 
-    # Install & Start service
-    started = install_and_start_service(client)
-
-    # Check status
+    started = False
     success = None
-    if started:
-        success = check_service_status(client)
+    if DEPLOY_BACKEND and AUTO_START_BACKEND:
+        # Install & Start service
+        started = install_and_start_service(client)
 
-    # Restart nginx
-    if started and success is not False:
-        restart_nginx(client)
+        # Check status
+        if started:
+            success = check_service_status(client)
+
+        # Restart nginx
+        if started and success is not False:
+            restart_nginx(client)
+    else:
+        log_info("\n[2/5] Skipping backend deployment and service start.")
+        if not DEPLOY_BACKEND:
+            log_info("  Reason: DEPLOY_BACKEND = False (frontend-only mode)")
+        elif not AUTO_START_BACKEND:
+            log_info("  Reason: AUTO_START_BACKEND = False")
 
     client.close()
 
     # Summary
     print("\n" + "=" * 50)
-    if started:
+    if DEPLOY_BACKEND and AUTO_START_BACKEND and started:
         print("     DEPLOY COMPLETE!")
     else:
-        print("     DEPLOY FINISHED (service not started)")
+        print("     FRONTEND DEPLOY COMPLETE!")
     print("=" * 50)
     print(f"\n  Server : {SERVER_IP}")
     print(f"  Frontend: {FRONTEND_REMOTE} ({frontend_count} files)")
-    print(f"  Backend : {BACKEND_REMOTE} ({backend_count} files)")
+    if DEPLOY_BACKEND:
+        print(f"  Backend : {BACKEND_REMOTE} ({backend_count} files)")
     print(f"\n  Access URL: http://{SERVER_IP}")
     print(f"  API URL:   http://{SERVER_IP}:{BACKEND_PORT}")
     print(f"\n  Server log: tail -f /tmp/myblog.log")
