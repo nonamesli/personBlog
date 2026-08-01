@@ -109,6 +109,16 @@ exports.deleteArticle = "delete from article where id = ?";
 exports.getRouterConfig = "select * from router";
 
 /**
- * 最新公开文章（按 id 倒序取前 N 条）
+ * 最新文章（按 id 倒序取前 N 条；未登录只看公开，普通用户还能看自己的非公开，管理员看全部）
  */
-exports.getLatestArticles = 'select * from article where is_public = 1 order by id desc limit ?';
+exports.getLatestArticles = function (userId, isAdmin) {
+    let visible;
+    if (isAdmin) {
+        visible = '';
+    } else if (userId) {
+        visible = 'and (is_public = 1 or user_id = ?)';
+    } else {
+        visible = 'and is_public = 1';
+    }
+    return `select * from article where 1 = 1 ${visible} order by id desc limit ?`;
+};

@@ -42,7 +42,12 @@ router.get('/api/getRouterConfig', function (req, res, next) {
 //最新文章
 router.get('/api/getLatestArticles', function (req, res, next) {
   let limit = Number(req.query.limit) || 5;
-  connection.query(getLatestArticles, [limit], function (err, results) {
+  const currentUser = getCurrentUser(req);
+  const userId = currentUser ? currentUser.userId : null;
+  const adminFlag = isAdmin(req);
+  const latestSql = getLatestArticles(userId, adminFlag);
+  const params = userId && !adminFlag ? [userId, limit] : [limit];
+  connection.query(latestSql, params, function (err, results) {
     let obj = {
       data: results,
       meta: {
@@ -171,7 +176,8 @@ router.post('/api/addArticle', authMiddleware, function (req, res, next) {
   let { title, type, desc: description, time, content, is_public = 1 } = req.body;
   const userId = req.user.userId;
   const author = req.user.nickname || req.user.username;
-  let submitTime = new Date().toLocaleDateString().replace(/\//g, '-');
+  const now = new Date();
+  const submitTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   const publicFlag = is_public === 0 || is_public === false || is_public === '0' ? 0 : 1;
   connection.query(addArticle, [title, author, type, description, time, content, req.user.username, submitTime, userId, publicFlag], function (err, results) {
     if (err) {
