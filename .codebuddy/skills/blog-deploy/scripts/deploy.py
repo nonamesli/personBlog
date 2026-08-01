@@ -14,8 +14,8 @@ BACKEND_REMOTE = f"{REMOTE_PATH}/projectServer"
 BACKEND_PORT = 3000
 
 # 部署模式开关（True=部署并启动后端，False=仅部署前端）
-DEPLOY_BACKEND = False
-AUTO_START_BACKEND = False
+DEPLOY_BACKEND = True
+AUTO_START_BACKEND = True
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.parent
 FRONTEND_DIST = PROJECT_ROOT / "fontEnd" / "dist"
