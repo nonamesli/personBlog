@@ -164,15 +164,27 @@ const Index = (props) => {
 
         <div className='footer'>
             <span>
-                <span>提交人：</span>
-                <span>{articleMsg?.submiter}</span>
+                <span>作者：</span>
+                <span>{articleMsg?.author}</span>
                 {isAdmin && !isOwner && <Tag color='blue' style={{ marginLeft: 8 }}>他人文章</Tag>}
                 {isOwner && <Tag color='purple' style={{ marginLeft: 8 }}>我的文章</Tag>}
             </span>
             <span>
-                <span>提交时间：</span>
+                <span>发布时间：</span>
                 <span>{articleMsg?.submitTime}</span>
             </span>
+            {articleMsg?.modifier && (
+                <span>
+                    <span>修改人：</span>
+                    <span>{articleMsg.modifier}</span>
+                </span>
+            )}
+            {articleMsg?.updateTime && (
+                <span>
+                    <span>修改时间：</span>
+                    <span>{articleMsg.updateTime}</span>
+                </span>
+            )}
         </div>
     </div>
 }

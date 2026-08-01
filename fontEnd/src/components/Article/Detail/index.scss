@@ -203,14 +203,17 @@
   .content {}
 
   .footer {
-    // width: calc(100% - 48px));
-    // bottom: 30px;
-    height: 40px;
     margin-top: 40px;
-    line-height: 40px;
+    padding-top: 16px;
+    border-top: 1px solid #e8e8e8;
+    line-height: 1.6;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 12px 28px;
+    color: #666;
+    font-size: 14px;
   }
 
   /* 上一篇 / 下一篇 导航 */

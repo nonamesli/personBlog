@@ -179,7 +179,8 @@ router.post('/api/addArticle', authMiddleware, function (req, res, next) {
   const now = new Date();
   const submitTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   const publicFlag = is_public === 0 || is_public === false || is_public === '0' ? 0 : 1;
-  connection.query(addArticle, [title, author, type, description, time, content, req.user.username, submitTime, userId, publicFlag], function (err, results) {
+  // 新增文章时，修改人和修改时间为空
+  connection.query(addArticle, [title, author, type, description, time, content, req.user.username, submitTime, null, null, userId, publicFlag], function (err, results) {
     if (err) {
       res.send({ data: null, meta: { code: 1, msg: err.message } });
       return;
@@ -207,11 +208,13 @@ router.post('/api/updateArticle', authMiddleware, function (req, res, next) {
 
     // 保留原作者信息
     const author = article.author;
-    const submiter = article.submiter;
-    const userId = article.user_id;
 
     const publicFlag = is_public === 0 || is_public === false || is_public === '0' ? 0 : 1;
-    connection.query(updateArticle, [title, author, type, description, time, content, publicFlag, id], function (err2, updateRes) {
+    // 记录当前修改人和修改时间
+    const modifier = req.user.nickname || req.user.username;
+    const now = new Date();
+    const updateTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    connection.query(updateArticle, [title, author, type, description, time, content, publicFlag, modifier, updateTime, id], function (err2, updateRes) {
       if (err2) {
         return res.send({ data: null, meta: { code: 1, msg: err2.message } });
       }
