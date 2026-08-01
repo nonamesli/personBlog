@@ -165,7 +165,7 @@ const Index = (props) => {
         <div className='footer'>
             <span>
                 <span>作者：</span>
-                <span>{articleMsg?.author}</span>
+                <span>{articleMsg?.submiter}</span>
                 {isAdmin && !isOwner && <Tag color='blue' style={{ marginLeft: 8 }}>他人文章</Tag>}
                 {isOwner && <Tag color='purple' style={{ marginLeft: 8 }}>我的文章</Tag>}
             </span>

@@ -139,7 +139,7 @@ const Index = () => {
                                     <Paragraph className='article-desc'>{item.description}</Paragraph>
                                 </div>
                                 <div className='article-meta'>
-                                    <span>{item.author}</span>
+                                    <span>{item.submiter}</span>
                                     <span className='dot'>·</span>
                                     <span>{item.submitTime}</span>
                                     <RightOutlined className='article-arrow' />

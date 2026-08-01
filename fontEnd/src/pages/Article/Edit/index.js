@@ -208,7 +208,7 @@ const EditArticle = () => {
                     <Alert
                         style={{ marginTop: 16, textAlign: 'left' }}
                         message='管理员正在编辑他人文章'
-                        description={`原作者：${article?.author || '未知'}。保存后原作者信息保持不变。`}
+                        description={`原作者：${article?.submiter || '未知'}。保存后原作者信息保持不变。`}
                         type='info'
                         showIcon
                     />

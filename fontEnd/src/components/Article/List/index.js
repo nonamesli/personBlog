@@ -147,7 +147,7 @@ const Index = (props) => {
                                     </div>
                                     <p className='article-desc'>{item.description}</p>
                                     <div className='article-meta'>
-                                        <span className='meta-item'><UserOutlined /> {item.author || item.submiter || '青春的脚步'}</span>
+                                        <span className='meta-item'><UserOutlined /> {item.submiter || '青春的脚步'}</span>
                                         <span className='meta-divider'>·</span>
                                         <span className='meta-item'><CalendarOutlined /> {item.submitTime || item.time || ''}</span>
                                         <span className='meta-divider'>·</span>
