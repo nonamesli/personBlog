@@ -1,0 +1,9 @@
+{
+  "name": "yuque-login-skill",
+  "version": "1.0.0",
+  "description": "语雀半自动登录辅助脚本",
+  "private": true,
+  "dependencies": {
+    "playwright": "^1.40.0"
+  }
+}

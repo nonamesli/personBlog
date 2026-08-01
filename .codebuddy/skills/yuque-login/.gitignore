@@ -1,0 +1,5 @@
+# 语雀登录凭据，切勿提交到 git
+yuque_cookies.json
+*.cookie
+*.token
+.env
