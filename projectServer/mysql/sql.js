@@ -86,7 +86,7 @@ exports.countArticleByType = function (userId, isAdmin) {
 /**
  * 新增文章
  */
-exports.addArticle = "insert into article(title, type, description, time, content, submiter, submitTime, modifier, updateTime, user_id, is_public) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+exports.addArticle = "insert into article(title, type, description, content, submiter, submitTime, modifier, updateTime, user_id, is_public) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 /**
  * 根据 id 查询文章及作者信息
@@ -96,7 +96,7 @@ exports.searchArticleDetailById = 'select * from article where id = ?';
 /**
  * 更新文章所有字段
  */
-exports.updateArticle = "update article set title = ?, type = ?, description = ?, time = ?, content = ?, is_public = ?, modifier = ?, updateTime = ? where id = ?";
+exports.updateArticle = "update article set title = ?, type = ?, description = ?, content = ?, is_public = ?, modifier = ?, updateTime = ? where id = ?";
 
 /**
  * 删除文章

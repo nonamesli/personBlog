@@ -114,7 +114,6 @@ const EditArticle = () => {
                 form.setFieldsValue({
                     title: data.title,
                     description: data.description,
-                    time: data.time,
                 });
             } else {
                 message.error('文章不存在');

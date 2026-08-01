@@ -173,7 +173,7 @@ router.get('/api/getArticleDetailById', function (req, res, next) {
 
 //新增文章（需要登录）
 router.post('/api/addArticle', authMiddleware, function (req, res, next) {
-  let { title, type, desc: description, time, content, is_public = 1 } = req.body;
+  let { title, type, desc: description, content, is_public = 1 } = req.body;
   const userId = req.user.userId;
   // 统一用 submiter 字段保存作者昵称
   const submiter = req.user.nickname || req.user.username;
@@ -181,7 +181,7 @@ router.post('/api/addArticle', authMiddleware, function (req, res, next) {
   const submitTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   const publicFlag = is_public === 0 || is_public === false || is_public === '0' ? 0 : 1;
   // 新增文章时，修改人和修改时间为空
-  connection.query(addArticle, [title, type, description, time, content, submiter, submitTime, null, null, userId, publicFlag], function (err, results) {
+  connection.query(addArticle, [title, type, description, content, submiter, submitTime, null, null, userId, publicFlag], function (err, results) {
     if (err) {
       res.send({ data: null, meta: { code: 1, msg: err.message } });
       return;
@@ -195,7 +195,7 @@ router.post('/api/addArticle', authMiddleware, function (req, res, next) {
 
 //更新文章（需要登录，普通用户只能修改自己的文章，管理员可以修改所有文章但不改变原作者）
 router.post('/api/updateArticle', authMiddleware, function (req, res, next) {
-  let { id, title, type, desc: description, time, content, is_public = 1 } = req.body;
+  let { id, title, type, desc: description, content, is_public = 1 } = req.body;
   const isAdminUser = req.user.role === 'admin';
 
   connection.query(searchArticleDetailById, [id], function (err, results) {
@@ -213,7 +213,7 @@ router.post('/api/updateArticle', authMiddleware, function (req, res, next) {
     const modifier = req.user.nickname || req.user.username;
     const now = new Date();
     const updateTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-    connection.query(updateArticle, [title, type, description, time, content, publicFlag, modifier, updateTime, id], function (err2, updateRes) {
+    connection.query(updateArticle, [title, type, description, content, publicFlag, modifier, updateTime, id], function (err2, updateRes) {
       if (err2) {
         return res.send({ data: null, meta: { code: 1, msg: err2.message } });
       }

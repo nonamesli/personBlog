@@ -19,7 +19,6 @@ UPDATE `users` SET `role` = 'admin' WHERE `username` = 'admin';
 -- 文章表新增字段（如果已存在会报错，可忽略）
 ALTER TABLE `article` ADD COLUMN `user_id` INT DEFAULT NULL COMMENT '文章作者用户ID';
 ALTER TABLE `article` ADD COLUMN `is_public` TINYINT NOT NULL DEFAULT 1 COMMENT '是否公开：1公开，0非公开';
-ALTER TABLE `article` ADD COLUMN `time` VARCHAR(50) DEFAULT NULL COMMENT '文章时间';
 ALTER TABLE `article` ADD COLUMN `modifier` VARCHAR(50) DEFAULT NULL COMMENT '最后修改人（昵称）';
 ALTER TABLE `article` ADD COLUMN `updateTime` VARCHAR(20) DEFAULT NULL COMMENT '最后修改时间 YYYY-MM-DD';
 

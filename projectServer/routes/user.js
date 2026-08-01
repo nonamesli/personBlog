@@ -60,7 +60,7 @@ router.post('/api/login', function (req, res) {
             return res.send({ data: null, meta: { code: 1, msg: '用户名或密码错误' } });
         }
 
-        const token = generateToken({ userId: user.id, username: user.username, role: user.role });
+        const token = generateToken({ userId: user.id, username: user.username, nickname: user.nickname, role: user.role });
         res.send({
             data: {
                 id: user.id,

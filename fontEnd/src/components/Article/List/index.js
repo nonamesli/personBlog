@@ -149,7 +149,7 @@ const Index = (props) => {
                                     <div className='article-meta'>
                                         <span className='meta-item'><UserOutlined /> {item.submiter || '青春的脚步'}</span>
                                         <span className='meta-divider'>·</span>
-                                        <span className='meta-item'><CalendarOutlined /> {item.submitTime || item.time || ''}</span>
+                                        <span className='meta-item'><CalendarOutlined /> {item.submitTime || ''}</span>
                                         <span className='meta-divider'>·</span>
                                         <Tag color={typeColorMap[type] || 'default'} className='meta-tag'>
                                             {type === '1' ? '技术' : type === '2' ? '生活' : item.type}
