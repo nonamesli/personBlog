@@ -1,15 +1,45 @@
 const crypto = require('crypto');
 const connection = require('../mysql/connect');
 const { getSystemConfig, getSystemConfigByKey, updateSystemConfig } = require('../mysql/sql');
+const { JWT_SECRET } = require('../middleware/auth');
 
-const ENCRYPT_KEY = process.env.CONFIG_ENCRYPT_KEY || '';
+let encryptKey = null;
 
-function getKey() {
-  const key = ENCRYPT_KEY.padEnd(32, '0').slice(0, 32);
+function getKey () {
+  const key = (encryptKey || crypto.createHash('sha256').update(JWT_SECRET).digest('hex')).slice(0, 32).padEnd(32, '0');
   return Buffer.from(key);
 }
 
-function encrypt(text) {
+function initEncryptKey () {
+  return new Promise((resolve, reject) => {
+    if (encryptKey) {
+      resolve(encryptKey);
+      return;
+    }
+    connection.query(getSystemConfigByKey, ['ENCRYPT_KEY'], (err, results) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      if (results.length > 0 && results[0].config_value) {
+        encryptKey = results[0].config_value;
+        resolve(encryptKey);
+        return;
+      }
+      const key = crypto.randomBytes(32).toString('hex');
+      connection.query(updateSystemConfig, [key, 1, '系统配置加密密钥', 'ENCRYPT_KEY'], (err2) => {
+        if (err2) {
+          reject(err2);
+          return;
+        }
+        encryptKey = key;
+        resolve(encryptKey);
+      });
+    });
+  });
+}
+
+function encrypt (text) {
   if (!text) return text;
   const iv = crypto.randomBytes(16);
   const cipher = crypto.createCipheriv('aes-256-cbc', getKey(), iv);
@@ -18,7 +48,7 @@ function encrypt(text) {
   return iv.toString('hex') + ':' + encrypted;
 }
 
-function decrypt(text) {
+function decrypt (text) {
   if (!text || !text.includes(':')) return text;
   try {
     const [ivHex, encryptedHex] = text.split(':');
@@ -35,36 +65,39 @@ function decrypt(text) {
 
 let configCache = {};
 
-function loadConfig() {
+function loadConfig () {
   return new Promise((resolve, reject) => {
-    connection.query(getSystemConfig, (err, results) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-      const map = {};
-      results.forEach(row => {
-        let value = row.config_value || '';
-        if (row.is_secret && value) {
-          value = decrypt(value);
+    initEncryptKey().then(() => {
+      connection.query(getSystemConfig, (err, results) => {
+        if (err) {
+          reject(err);
+          return;
         }
-        map[row.config_key] = value;
+        const map = {};
+        results.forEach(row => {
+          if (row.config_key === 'ENCRYPT_KEY') return;
+          let value = row.config_value || '';
+          if (row.is_secret && value) {
+            value = decrypt(value);
+          }
+          map[row.config_key] = value;
+        });
+        configCache = map;
+        resolve(map);
       });
-      configCache = map;
-      resolve(map);
-    });
+    }).catch(reject);
   });
 }
 
-function getConfig(key) {
+function getConfig (key) {
   return configCache[key] || process.env[key] || '';
 }
 
-function getAllConfig() {
+function getAllConfig () {
   return { ...configCache };
 }
 
-function setConfig(key, value, isSecret = 0, description = '') {
+function setConfig (key, value, isSecret = 0, description = '') {
   return new Promise((resolve, reject) => {
     let storeValue = value;
     if (isSecret && value) {
@@ -81,7 +114,7 @@ function setConfig(key, value, isSecret = 0, description = '') {
   });
 }
 
-function maskSecret(value) {
+function maskSecret (value) {
   if (!value || value.length <= 8) return value ? '********' : '';
   return value.slice(0, 4) + '****' + value.slice(-4);
 }
