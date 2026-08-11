@@ -28,6 +28,7 @@ import {
 } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import BreadCrumb from 'components/BreadCrumb';
+import JsonEditor from 'components/JsonEditor';
 import { getResume_request, updateResume_request } from 'api/request';
 import { getUserInfo } from 'utils/auth';
 import { defaultResumeData } from 'utils/resumeSchema';
@@ -57,6 +58,7 @@ const ResumeEdit = () => {
     const [submitting, setSubmitting] = useState(false);
     const [rawJsonText, setRawJsonText] = useState('');
     const [rawJsonSubmitting, setRawJsonSubmitting] = useState(false);
+    const [activeTab, setActiveTab] = useState('profile');
 
     // 非管理员禁止访问
     useEffect(() => {
@@ -87,11 +89,46 @@ const ResumeEdit = () => {
             .finally(() => setLoading(false));
     }, [form]);
 
+    const syncRawJsonFromForm = () => {
+        try {
+            const values = form.getFieldsValue(true);
+            const payload = toResumeData(values);
+            setRawJsonText(JSON.stringify(payload, null, 2));
+        } catch (e) {
+            // 忽略转换错误
+        }
+    };
+
+    const syncTabValues = (key, sourceText = rawJsonText) => {
+        try {
+            const payload = JSON.parse(sourceText || '{}');
+            const formValues = toFormValues(payload);
+            const map = {
+                profile: { profile: formValues.profile },
+                work: { workExperience: formValues.workExperience },
+                contributions: { contributions: formValues.contributions },
+                skills: { skills: formValues.skills },
+                evaluation: { selfEvaluation: formValues.selfEvaluation }
+            };
+            if (map[key]) {
+                form.setFieldsValue(map[key]);
+            }
+        } catch (e) {
+            // 忽略解析错误
+        }
+    };
+
+    const handleTabChange = (key) => {
+        setActiveTab(key);
+        syncTabValues(key);
+    };
+
     const handleSubmit = async () => {
         try {
-            const values = await form.validateFields();
+            await form.validateFields();
             setSubmitting(true);
-            const payload = toResumeData(values);
+            // 直接以 JSON 编辑器中的完整数据为准（已通过 onValuesChange 与表单实时同步）
+            const payload = JSON.parse(rawJsonText || '{}');
             const res = await updateResume_request({ data: payload });
             if (res?.meta?.code === 0) {
                 message.success('简历保存成功');
@@ -151,12 +188,16 @@ const ResumeEdit = () => {
                     layout='vertical'
                     className='resume-form'
                     initialValues={defaultResumeData}
+                    preserve={true}
+                    onValuesChange={syncRawJsonFromForm}
                     onFinish={handleSubmit}
                 >
                     <Tabs
-                        defaultActiveKey='profile'
+                        activeKey={activeTab}
                         type='card'
                         className='resume-tabs'
+                        destroyInactiveTabPane={false}
+                        onChange={handleTabChange}
                         items={[
                             {
                                 key: 'profile',
@@ -216,11 +257,9 @@ const ResumeEdit = () => {
                                 style={{ marginBottom: 16 }}
                             />
                             <Form.Item>
-                                <TextArea
-                                    rows={24}
+                                <JsonEditor
                                     value={rawJsonText}
-                                    onChange={e => setRawJsonText(e.target.value)}
-                                    placeholder='请输入简历 JSON'
+                                    onChange={setRawJsonText}
                                 />
                             </Form.Item>
                             <Button
