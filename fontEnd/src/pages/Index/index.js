@@ -6,9 +6,11 @@ import {
     HeartOutlined,
     MessageOutlined,
     UserOutlined,
-    RightOutlined
+    RightOutlined,
+    RobotOutlined
 } from '@ant-design/icons';
 import { getLatestArticles_request } from 'api/request';
+import AiChat from 'components/AiChat';
 import './index.scss';
 
 const { Title, Paragraph, Text } = Typography;
@@ -40,21 +42,22 @@ const config = [
 
 // 文章类型 -> 栏目 slug 映射（避免 URL 出现中文；Detail 面包屑只识别 slug）
 const TYPE_SLUG = {
-    '技术': 'tech', 
+    '技术': 'tech',
     'tech': 'tech',
     '1': 'tech',
-    '生活': 'live', 
+    '生活': 'live',
     'live': 'live',
     '2': 'live',
-    '留言': 'guestbook', 
+    '留言': 'guestbook',
     'guestbook': 'guestbook',
-    '个人简介': 'concat', 
+    '个人简介': 'concat',
     'concat': 'concat'
 };
 
 const Index = () => {
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [aiChatVisible, setAiChatVisible] = useState(false);
 
     // 获取最新文章
     useEffect(() => {
@@ -66,7 +69,7 @@ const Index = () => {
                     setArticles(res.data || []);
                 }
             })
-            .catch(() => {})
+            .catch(() => { })
             .finally(() => {
                 if (mounted) setLoading(false);
             });
@@ -86,9 +89,17 @@ const Index = () => {
                     <div className='hero-actions'>
                         <Link to='/tech' className='btn btn-primary'>开始阅读</Link>
                         <Link to='/concat' className='btn btn-ghost'>关于我</Link>
+                        <button
+                            className='btn btn-ghost ai-chat-btn'
+                            onClick={() => setAiChatVisible(true)}
+                        >
+                            <RobotOutlined /> AI 助手
+                        </button>
                     </div>
                 </div>
             </section>
+
+            <AiChat visible={aiChatVisible} onClose={() => setAiChatVisible(false)} />
 
             {/* 栏目网格 */}
             <section className='section'>

@@ -3,6 +3,7 @@ var router = express.Router();
 let connection = require('../mysql/connect');
 let { authMiddleware, JWT_SECRET } = require('../middleware/auth');
 let jwt = require('jsonwebtoken');
+let axios = require('axios');
 let { searchTableSql, searchTableTotalSql, searchArticleListByType, searchArticleDetailById, addArticle, getRouterConfig, getLatestArticles, updateArticle, deleteArticle, getPrevArticle, getNextArticle, countArticleByType, getResume, initResume, updateResumeContent, updateResumeSchema } = require('../mysql/sql');
 let { resumeSchema: defaultResumeSchema, defaultResumeData } = require('../config/resumeDefault');
 
@@ -363,6 +364,50 @@ router.post('/api/updateResumeSchema', authMiddleware, function (req, res, next)
     }
     res.send({ data: null, meta: { code: 0, msg: 'Schema 保存成功' } });
   });
+});
+
+// AI 对话（后端代理，保护 API Key）
+router.post('/api/ai/chat', async function (req, res, next) {
+  const { message, history = [] } = req.body;
+  if (!message) {
+    return res.status(400).send({ data: null, meta: { code: 400, msg: '消息不能为空' } });
+  }
+
+  const apiKey = process.env.AI_API_KEY;
+  const baseURL = process.env.AI_BASE_URL || 'https://api.deepseek.com/v1';
+  const model = process.env.AI_MODEL || 'deepseek-chat';
+
+  if (!apiKey) {
+    return res.status(500).send({ data: null, meta: { code: 500, msg: '未配置 AI API Key' } });
+  }
+
+  try {
+    const messages = [
+      { role: 'system', content: '你是一个有帮助的博客 AI 助手，可以回答技术问题、总结文章、提供建议。回答要简洁清晰。' },
+      ...history,
+      { role: 'user', content: message }
+    ];
+
+    const response = await axios.post(
+      `${baseURL}/chat/completions`,
+      { model, messages },
+      {
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        timeout: 30000
+      }
+    );
+
+    const reply = response.data.choices?.[0]?.message?.content || 'AI 没有返回内容';
+    res.send({ data: reply, meta: { code: 0 } });
+  } catch (err) {
+    const detail = err.response?.data;
+    console.error('AI 调用失败:', detail || err.message);
+    const msg = detail?.error?.message || detail?.message || 'AI 服务调用失败';
+    res.status(500).send({ data: null, meta: { code: 500, msg } });
+  }
 });
 
 module.exports = router;

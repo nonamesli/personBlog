@@ -130,3 +130,12 @@ export const deleteArticle_request = (data) => {
         data
     });
 }
+
+// AI 对话
+export const aiChat_request = (data) => {
+    return http({
+        url: '/api/ai/chat',
+        method: 'post',
+        data
+    });
+}
