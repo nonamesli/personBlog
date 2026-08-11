@@ -6,6 +6,14 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var app = express();
+var { loadConfig } = require('./utils/configStore');
+
+// 启动时从数据库加载系统配置
+loadConfig().then(() => {
+  console.log('系统配置已从数据库加载');
+}).catch(err => {
+  console.error('系统配置加载失败:', err.message);
+});
 
 var indexRouter = require('./routes/index');
 var userRouter = require('./routes/user');

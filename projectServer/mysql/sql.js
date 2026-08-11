@@ -129,6 +129,21 @@ exports.updateResumeContent = "update resume set content_json = ? where id = 1";
 exports.updateResumeSchema = "update resume set schema_json = ? where id = 1";
 
 /**
+ * 查询系统配置
+ */
+exports.getSystemConfig = "select * from system_config";
+
+/**
+ * 根据 key 查询系统配置
+ */
+exports.getSystemConfigByKey = "select * from system_config where config_key = ?";
+
+/**
+ * 更新系统配置值
+ */
+exports.updateSystemConfig = "update system_config set config_value = ?, is_secret = ?, description = ? where config_key = ?";
+
+/**
  * 最新文章（按 id 倒序取前 N 条；未登录只看公开，普通用户还能看自己的非公开，管理员看全部）
  */
 exports.getLatestArticles = function (userId, isAdmin) {

@@ -42,3 +42,21 @@ CREATE TABLE IF NOT EXISTS `resume` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='简历表';
 
 -- 注意：默认 schema 与内容会在应用首次调用 /api/getResume 时自动初始化写入，避免 SQL 中维护大段 JSON。
+
+-- 系统配置表：存储可在线管理的配置项，敏感值加密存储
+CREATE TABLE IF NOT EXISTS `system_config` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `config_key` VARCHAR(50) NOT NULL COMMENT '配置键',
+  `config_value` TEXT COMMENT '配置值（敏感项加密）',
+  `is_secret` TINYINT NOT NULL DEFAULT 0 COMMENT '是否敏感：1是 0否',
+  `description` VARCHAR(255) DEFAULT NULL COMMENT '配置说明',
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_config_key` (`config_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统配置表';
+
+-- 初始化 AI 配置默认值（API Key 留空，需管理员在后台填写）
+INSERT IGNORE INTO `system_config` (`config_key`, `config_value`, `is_secret`, `description`) VALUES
+('AI_API_KEY', '', 1, 'AI API Key'),
+('AI_BASE_URL', 'https://api.siliconflow.cn/v1', 0, 'AI API Base URL'),
+('AI_MODEL', 'Qwen/Qwen2.5-7B-Instruct', 0, 'AI 模型名称');

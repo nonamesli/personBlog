@@ -5,6 +5,22 @@
         padding: 0;
     }
 
+    .ai-config-collapse {
+        padding: 16px 16px 0;
+        border-bottom: 1px solid #e5e7eb;
+        background: #fff;
+
+        .ant-collapse-header {
+            font-size: 13px;
+            color: #6366f1;
+            padding: 8px 0 !important;
+        }
+
+        .ant-collapse-content-box {
+            padding: 12px 0 16px !important;
+        }
+    }
+
     .ai-chat-title {
         display: flex;
         align-items: center;

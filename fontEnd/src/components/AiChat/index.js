@@ -1,8 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Drawer, Input, Button, Spin, Empty, message } from 'antd';
-import { SendOutlined, RobotOutlined, UserOutlined } from '@ant-design/icons';
-import { aiChat_request } from 'api/request';
+import { Drawer, Input, Button, Spin, Empty, message, Form, Collapse } from 'antd';
+import { SendOutlined, RobotOutlined, UserOutlined, SettingOutlined } from '@ant-design/icons';
+import { aiChat_request, getAiConfig_request, updateAiConfig_request } from 'api/request';
+import { getUserInfo } from 'utils/auth';
 import './index.scss';
+
+const { Panel } = Collapse;
 
 const AiChat = ({ visible, onClose }) => {
     const [input, setInput] = useState('');
@@ -10,7 +13,32 @@ const AiChat = ({ visible, onClose }) => {
         { role: 'assistant', content: '你好，我是博客 AI 助手，可以帮你总结文章、答疑解惑，有什么问题尽管问～' }
     ]);
     const [loading, setLoading] = useState(false);
+    const [configLoading, setConfigLoading] = useState(false);
+    const [configForm] = Form.useForm();
+    const [isAdmin, setIsAdmin] = useState(false);
     const messagesEndRef = useRef(null);
+
+    useEffect(() => {
+        const user = getUserInfo();
+        setIsAdmin(user?.role === 'admin');
+    }, []);
+
+    useEffect(() => {
+        if (visible && isAdmin) {
+            loadConfig();
+        }
+    }, [visible, isAdmin]);
+
+    const loadConfig = async () => {
+        try {
+            const res = await getAiConfig_request();
+            if (res?.meta?.code === 0) {
+                configForm.setFieldsValue(res.data);
+            }
+        } catch (err) {
+            console.error('加载 AI 配置失败', err);
+        }
+    };
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -53,6 +81,24 @@ const AiChat = ({ visible, onClose }) => {
         }
     };
 
+    const handleSaveConfig = async (values) => {
+        setConfigLoading(true);
+        try {
+            const res = await updateAiConfig_request(values);
+            if (res?.meta?.code === 0) {
+                message.success('配置已保存');
+                loadConfig();
+            } else {
+                message.error(res?.meta?.msg || '保存失败');
+            }
+        } catch (err) {
+            const backendMsg = err.response?.data?.meta?.msg;
+            message.error(backendMsg || '保存失败');
+        } finally {
+            setConfigLoading(false);
+        }
+    };
+
     return (
         <Drawer
             title={
@@ -61,11 +107,31 @@ const AiChat = ({ visible, onClose }) => {
                 </span>
             }
             placement='right'
-            width={480}
+            width={520}
             onClose={onClose}
             visible={visible}
             className='ai-chat-drawer'
         >
+            {isAdmin && (
+                <Collapse className='ai-config-collapse' ghost>
+                    <Panel header={<span><SettingOutlined /> AI 配置（仅管理员）</span>} key='config'>
+                        <Form form={configForm} layout='vertical' onFinish={handleSaveConfig}>
+                            <Form.Item name='AI_BASE_URL' label='Base URL' rules={[{ required: true }]}>
+                                <Input placeholder='https://api.siliconflow.cn/v1' />
+                            </Form.Item>
+                            <Form.Item name='AI_MODEL' label='Model' rules={[{ required: true }]}>
+                                <Input placeholder='Qwen/Qwen2.5-7B-Instruct' />
+                            </Form.Item>
+                            <Form.Item name='AI_API_KEY' label='API Key'>
+                                <Input.Password placeholder='留空则保持原配置不变' />
+                            </Form.Item>
+                            <Button type='primary' htmlType='submit' loading={configLoading} block>
+                                保存配置
+                            </Button>
+                        </Form>
+                    </Panel>
+                </Collapse>
+            )}
             <div className='ai-chat-messages'>
                 {messages.length === 0 ? (
                     <Empty description='开始和 AI 对话吧' />

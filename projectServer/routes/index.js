@@ -4,7 +4,8 @@ let connection = require('../mysql/connect');
 let { authMiddleware, JWT_SECRET } = require('../middleware/auth');
 let jwt = require('jsonwebtoken');
 let axios = require('axios');
-let { searchTableSql, searchTableTotalSql, searchArticleListByType, searchArticleDetailById, addArticle, getRouterConfig, getLatestArticles, updateArticle, deleteArticle, getPrevArticle, getNextArticle, countArticleByType, getResume, initResume, updateResumeContent, updateResumeSchema } = require('../mysql/sql');
+let { searchTableSql, searchTableTotalSql, searchArticleListByType, searchArticleDetailById, addArticle, getRouterConfig, getLatestArticles, updateArticle, deleteArticle, getPrevArticle, getNextArticle, countArticleByType, getResume, updateResume, getSystemConfig, updateSystemConfig } = require('../mysql/sql');
+let { getConfig, getAllConfig, setConfig, maskSecret } = require('../utils/configStore');
 let { resumeSchema: defaultResumeSchema, defaultResumeData } = require('../config/resumeDefault');
 
 // 从请求头中解析当前登录用户信息（可选，不登录返回 null）
@@ -373,9 +374,9 @@ router.post('/api/ai/chat', async function (req, res, next) {
     return res.status(400).send({ data: null, meta: { code: 400, msg: '消息不能为空' } });
   }
 
-  const apiKey = process.env.AI_API_KEY;
-  const baseURL = process.env.AI_BASE_URL || 'https://api.deepseek.com/v1';
-  const model = process.env.AI_MODEL || 'deepseek-chat';
+  const apiKey = getConfig('AI_API_KEY');
+  const baseURL = getConfig('AI_BASE_URL') || 'https://api.deepseek.com/v1';
+  const model = getConfig('AI_MODEL') || 'deepseek-chat';
 
   if (!apiKey) {
     return res.status(500).send({ data: null, meta: { code: 500, msg: '未配置 AI API Key' } });
@@ -407,6 +408,46 @@ router.post('/api/ai/chat', async function (req, res, next) {
     console.error('AI 调用失败:', detail || err.message);
     const msg = detail?.error?.message || detail?.message || 'AI 服务调用失败';
     res.status(500).send({ data: null, meta: { code: 500, msg } });
+  }
+});
+
+// 获取 AI 配置（仅管理员，API Key 脱敏）
+router.get('/api/admin/aiConfig', authMiddleware, function (req, res, next) {
+  if (req.user.role !== 'admin') {
+    return res.status(403).send({ data: null, meta: { code: 403, msg: '仅管理员可查看配置' } });
+  }
+  const config = getAllConfig();
+  res.send({
+    data: {
+      AI_BASE_URL: config.AI_BASE_URL,
+      AI_MODEL: config.AI_MODEL,
+      AI_API_KEY: maskSecret(config.AI_API_KEY)
+    },
+    meta: { code: 0 }
+  });
+});
+
+// 更新 AI 配置（仅管理员）
+router.post('/api/admin/aiConfig', authMiddleware, async function (req, res, next) {
+  if (req.user.role !== 'admin') {
+    return res.status(403).send({ data: null, meta: { code: 403, msg: '仅管理员可修改配置' } });
+  }
+  let { AI_API_KEY, AI_BASE_URL, AI_MODEL } = req.body;
+  if (!AI_BASE_URL || !AI_MODEL) {
+    return res.status(400).send({ data: null, meta: { code: 400, msg: 'Base URL 和 Model 不能为空' } });
+  }
+  // 如果前端传的是脱敏后的 Key（含 ****），则保持原值不变
+  if (AI_API_KEY && AI_API_KEY.includes('****')) {
+    AI_API_KEY = getConfig('AI_API_KEY');
+  }
+  try {
+    await setConfig('AI_API_KEY', AI_API_KEY || '', 1, 'AI API Key');
+    await setConfig('AI_BASE_URL', AI_BASE_URL, 0, 'AI API Base URL');
+    await setConfig('AI_MODEL', AI_MODEL, 0, 'AI 模型名称');
+    res.send({ data: null, meta: { code: 0, msg: '保存成功' } });
+  } catch (err) {
+    console.error('保存 AI 配置失败:', err.message);
+    res.status(500).send({ data: null, meta: { code: 500, msg: '保存失败' } });
   }
 });
 

@@ -139,3 +139,21 @@ export const aiChat_request = (data) => {
         data
     });
 }
+
+// 获取 AI 配置（管理员）
+export const getAiConfig_request = () => {
+    return http({
+        url: '/api/admin/aiConfig',
+        method: 'get',
+        params: { _t: Date.now() }
+    });
+}
+
+// 更新 AI 配置（管理员）
+export const updateAiConfig_request = (data) => {
+    return http({
+        url: '/api/admin/aiConfig',
+        method: 'post',
+        data
+    });
+}
