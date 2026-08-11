@@ -58,6 +58,18 @@
             }
         }
 
+        .raw-json-collapse {
+            margin-top: 24px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06), 0 1px 12px rgba(0, 0, 0, 0.04);
+
+            .ant-collapse-header {
+                font-weight: 600;
+                color: #374151;
+            }
+        }
+
         .form-actions-card {
             margin-top: 24px;
             border-radius: 16px;

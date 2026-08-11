@@ -3,7 +3,8 @@ var router = express.Router();
 let connection = require('../mysql/connect');
 let { authMiddleware, JWT_SECRET } = require('../middleware/auth');
 let jwt = require('jsonwebtoken');
-let { searchTableSql, searchTableTotalSql, searchArticleListByType, searchArticleDetailById, addArticle, getRouterConfig, getLatestArticles, updateArticle, deleteArticle, getPrevArticle, getNextArticle, countArticleByType, getResume, updateResume } = require('../mysql/sql');
+let { searchTableSql, searchTableTotalSql, searchArticleListByType, searchArticleDetailById, addArticle, getRouterConfig, getLatestArticles, updateArticle, deleteArticle, getPrevArticle, getNextArticle, countArticleByType, getResume, initResume, updateResumeContent, updateResumeSchema } = require('../mysql/sql');
+let { resumeSchema: defaultResumeSchema, defaultResumeData } = require('../config/resumeDefault');
 
 // 从请求头中解析当前登录用户信息（可选，不登录返回 null）
 function getCurrentUser (req) {
@@ -252,25 +253,64 @@ router.post('/api/deleteArticle', authMiddleware, function (req, res, next) {
 });
 //联系
 
-// 获取简历（公开接口，无需登录）
+// 安全解析 JSON 字段（兼容 MySQL 已解析对象或字符串）
+function safeJsonParse (value, fallback = {}) {
+  if (!value) return fallback;
+  if (typeof value === 'object') return value;
+  try {
+    return JSON.parse(value);
+  } catch (e) {
+    return fallback;
+  }
+}
+
+// 获取简历（公开接口，无需登录）：返回 schema + data，首次访问自动写入默认数据
 router.get('/api/getResume', function (req, res, next) {
   connection.query(getResume, function (err, results) {
     if (err) {
       return res.status(500).send({ data: null, meta: { code: 500, msg: '查询简历失败' } });
     }
-    let data = {};
-    if (results.length > 0 && results[0].data) {
-      try {
-        data = typeof results[0].data === 'string' ? JSON.parse(results[0].data) : results[0].data;
-      } catch (e) {
-        data = {};
-      }
+
+    // 没有记录时自动初始化默认 schema 和 content
+    if (!results || results.length === 0) {
+      const schemaStr = JSON.stringify(defaultResumeSchema);
+      const contentStr = JSON.stringify(defaultResumeData);
+      return connection.query(initResume, [schemaStr, contentStr], function (initErr) {
+        if (initErr) {
+          return res.status(500).send({ data: null, meta: { code: 500, msg: '初始化简历失败' } });
+        }
+        res.send({
+          data: { schema: defaultResumeSchema, data: defaultResumeData },
+          meta: { code: 0 }
+        });
+      });
     }
-    res.send({ data, meta: { code: 0 } });
+
+    const row = results[0];
+    // 兼容旧表结构（只有 data 字段）：自动迁移到新结构
+    if (row.data !== undefined && (row.schema_json === undefined || row.content_json === undefined)) {
+      const migratedSchema = defaultResumeSchema;
+      const migratedContent = safeJsonParse(row.data, defaultResumeData);
+      const schemaStr = JSON.stringify(migratedSchema);
+      const contentStr = JSON.stringify(migratedContent);
+      return connection.query('replace into resume(id, schema_json, content_json, version) values(1, ?, ?, 1)', [schemaStr, contentStr], function (migrateErr) {
+        if (migrateErr) {
+          return res.status(500).send({ data: null, meta: { code: 500, msg: '迁移简历数据失败' } });
+        }
+        res.send({
+          data: { schema: migratedSchema, data: migratedContent },
+          meta: { code: 0 }
+        });
+      });
+    }
+
+    const schema = safeJsonParse(row.schema_json, defaultResumeSchema);
+    const data = safeJsonParse(row.content_json, defaultResumeData);
+    res.send({ data: { schema, data }, meta: { code: 0 } });
   });
 });
 
-// 更新简历（仅管理员）
+// 更新简历内容（仅管理员）
 router.post('/api/updateResume', authMiddleware, function (req, res, next) {
   if (req.user.role !== 'admin') {
     return res.status(403).send({ data: null, meta: { code: 403, msg: '仅管理员可修改简历' } });
@@ -279,22 +319,49 @@ router.post('/api/updateResume', authMiddleware, function (req, res, next) {
   if (!data || typeof data !== 'object') {
     return res.status(400).send({ data: null, meta: { code: 400, msg: '简历数据不能为空' } });
   }
-  const jsonStr = JSON.stringify(data);
-  connection.query(updateResume, [jsonStr], function (err, results) {
+  const contentStr = JSON.stringify(data);
+  connection.query(updateResumeContent, [contentStr], function (err, results) {
     if (err) {
       return res.status(500).send({ data: null, meta: { code: 500, msg: '更新简历失败' } });
     }
     if (results.affectedRows === 0) {
-      // 没有记录则插入
-      connection.query('insert into resume(id, data) values(1, ?)', [jsonStr], function (err2) {
+      // 没有记录则使用默认 schema 初始化后再更新 content
+      const schemaStr = JSON.stringify(defaultResumeSchema);
+      return connection.query(initResume, [schemaStr, contentStr], function (err2) {
         if (err2) {
           return res.status(500).send({ data: null, meta: { code: 500, msg: '新增简历失败' } });
         }
         res.send({ data: null, meta: { code: 0, msg: '保存成功' } });
       });
-    } else {
-      res.send({ data: null, meta: { code: 0, msg: '保存成功' } });
     }
+    res.send({ data: null, meta: { code: 0, msg: '保存成功' } });
+  });
+});
+
+// 更新简历 JSON Schema（仅管理员）
+router.post('/api/updateResumeSchema', authMiddleware, function (req, res, next) {
+  if (req.user.role !== 'admin') {
+    return res.status(403).send({ data: null, meta: { code: 403, msg: '仅管理员可修改简历 Schema' } });
+  }
+  const { schema } = req.body;
+  if (!schema || typeof schema !== 'object') {
+    return res.status(400).send({ data: null, meta: { code: 400, msg: 'Schema 不能为空' } });
+  }
+  const schemaStr = JSON.stringify(schema);
+  connection.query(updateResumeSchema, [schemaStr], function (err, results) {
+    if (err) {
+      return res.status(500).send({ data: null, meta: { code: 500, msg: '更新 Schema 失败' } });
+    }
+    if (results.affectedRows === 0) {
+      const contentStr = JSON.stringify(defaultResumeData);
+      return connection.query(initResume, [schemaStr, contentStr], function (err2) {
+        if (err2) {
+          return res.status(500).send({ data: null, meta: { code: 500, msg: '初始化简历 Schema 失败' } });
+        }
+        res.send({ data: null, meta: { code: 0, msg: 'Schema 保存成功' } });
+      });
+    }
+    res.send({ data: null, meta: { code: 0, msg: 'Schema 保存成功' } });
   });
 });
 

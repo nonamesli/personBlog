@@ -45,6 +45,13 @@ const pathList = [
     { name: '个人简历', path: '/concat' }
 ];
 
+// 兼容后端返回：新结构 { schema, data } 或旧结构直接是简历对象
+const pickResumePayload = (resData) => {
+    if (!resData) return {};
+    if (resData.data && typeof resData.data === 'object') return resData.data;
+    return resData;
+};
+
 // 空值保护：当字段缺失时使用默认值填充
 const mergeResume = (remote = {}) => {
     const base = JSON.parse(JSON.stringify(defaultResumeData));
@@ -90,7 +97,7 @@ const Index = () => {
         getResume_request()
             .then(res => {
                 if (res?.meta?.code === 0) {
-                    setResume(mergeResume(res.data));
+                    setResume(mergeResume(pickResumePayload(res.data)));
                 } else {
                     message.warning('简历数据加载失败，显示默认内容');
                 }

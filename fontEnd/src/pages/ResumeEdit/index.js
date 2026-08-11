@@ -12,7 +12,8 @@ import {
     Tabs,
     Divider,
     Row,
-    Col
+    Col,
+    Collapse
 } from 'antd';
 import {
     PlusOutlined,
@@ -41,12 +42,21 @@ const pathList = [
     { name: '编辑简历', path: '/resume/edit' }
 ];
 
+// 兼容后端返回：新结构 { schema, data } 或旧结构直接是简历对象
+const pickResumePayload = (resData) => {
+    if (!resData) return {};
+    if (resData.data && typeof resData.data === 'object') return resData.data;
+    return resData;
+};
+
 const ResumeEdit = () => {
     const [form] = Form.useForm();
     const history = useHistory();
     const userInfo = getUserInfo();
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
+    const [rawJsonText, setRawJsonText] = useState('');
+    const [rawJsonSubmitting, setRawJsonSubmitting] = useState(false);
 
     // 非管理员禁止访问
     useEffect(() => {
@@ -60,10 +70,14 @@ const ResumeEdit = () => {
         setLoading(true);
         getResume_request()
             .then(res => {
-                const base = res?.meta?.code === 0 ? { ...defaultResumeData, ...res.data } : defaultResumeData;
-                form.setFieldsValue(toFormValues(base));
-                if (res?.meta?.code !== 0) {
+                if (res?.meta?.code === 0) {
+                    const payload = pickResumePayload(res.data);
+                    const merged = { ...defaultResumeData, ...payload };
+                    form.setFieldsValue(toFormValues(merged));
+                    setRawJsonText(JSON.stringify(merged, null, 2));
+                } else {
                     message.warning('加载简历数据失败，使用默认内容');
+                    form.setFieldsValue(toFormValues(defaultResumeData));
                 }
             })
             .catch(() => {
@@ -89,6 +103,28 @@ const ResumeEdit = () => {
             message.error('表单校验失败，请检查填写内容');
         } finally {
             setSubmitting(false);
+        }
+    };
+
+    const handleRawJsonSubmit = async () => {
+        try {
+            const payload = JSON.parse(rawJsonText);
+            if (!payload || typeof payload !== 'object') {
+                message.error('JSON 必须是一个对象');
+                return;
+            }
+            setRawJsonSubmitting(true);
+            const res = await updateResume_request({ data: payload });
+            if (res?.meta?.code === 0) {
+                message.success('JSON 保存成功');
+                form.setFieldsValue(toFormValues({ ...defaultResumeData, ...payload }));
+            } else {
+                message.error(res?.meta?.msg || '保存失败');
+            }
+        } catch (err) {
+            message.error('JSON 格式错误，请检查');
+        } finally {
+            setRawJsonSubmitting(false);
         }
     };
 
@@ -169,6 +205,34 @@ const ResumeEdit = () => {
                             }
                         ]}
                     />
+
+                    <Collapse className='raw-json-collapse' bordered={false}>
+                        <Collapse.Panel header='直接编辑简历 JSON（content_json）' key='rawJson'>
+                            <Alert
+                                message='提示'
+                                description='在此处可直接编辑完整的简历 JSON 对象，保存后会覆盖数据库中的 content_json。格式校验通过后会同步回表单。'
+                                type='info'
+                                showIcon
+                                style={{ marginBottom: 16 }}
+                            />
+                            <Form.Item>
+                                <TextArea
+                                    rows={24}
+                                    value={rawJsonText}
+                                    onChange={e => setRawJsonText(e.target.value)}
+                                    placeholder='请输入简历 JSON'
+                                />
+                            </Form.Item>
+                            <Button
+                                type='primary'
+                                icon={<SaveOutlined />}
+                                loading={rawJsonSubmitting}
+                                onClick={handleRawJsonSubmit}
+                            >
+                                保存 JSON
+                            </Button>
+                        </Collapse.Panel>
+                    </Collapse>
 
                     <Card className='form-actions-card' bordered={false}>
                         <Space size={16}>

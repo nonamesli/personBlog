@@ -95,10 +95,19 @@ export const getResume_request = () => {
     });
 }
 
-// 更新简历（管理员）
+// 更新简历内容（管理员）
 export const updateResume_request = (data) => {
     return http({
         url: '/api/updateResume',
+        method: 'post',
+        data
+    });
+}
+
+// 更新简历 JSON Schema（管理员）
+export const updateResumeSchema_request = (data) => {
+    return http({
+        url: '/api/updateResumeSchema',
         method: 'post',
         data
     });

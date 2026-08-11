@@ -114,9 +114,19 @@ exports.getRouterConfig = "select * from router";
 exports.getResume = "select * from resume where id = 1";
 
 /**
- * 更新简历数据
+ * 初始化简历数据（id=1）
  */
-exports.updateResume = "update resume set data = ? where id = 1";
+exports.initResume = "insert into resume(id, schema_json, content_json, version) values(1, ?, ?, 1)";
+
+/**
+ * 更新简历内容
+ */
+exports.updateResumeContent = "update resume set content_json = ? where id = 1";
+
+/**
+ * 更新简历 JSON Schema
+ */
+exports.updateResumeSchema = "update resume set schema_json = ? where id = 1";
 
 /**
  * 最新文章（按 id 倒序取前 N 条；未登录只看公开，普通用户还能看自己的非公开，管理员看全部）

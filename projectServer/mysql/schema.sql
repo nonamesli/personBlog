@@ -30,13 +30,15 @@ INSERT IGNORE INTO `users` (`username`, `password`, `nickname`) VALUES
 -- 如果旧文章没有 user_id，默认归到 admin 用户（id 为 1）
 UPDATE `article` SET `user_id` = 1 WHERE `user_id` IS NULL;
 
--- 简历表：单条记录存储整份简历 JSON 数据
+-- 简历表：单条记录同时存储 JSON Schema 与简历内容
 CREATE TABLE IF NOT EXISTS `resume` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `data` JSON NOT NULL COMMENT '简历 JSON 数据',
+  `schema_json` JSON NOT NULL COMMENT '简历 JSON Schema 定义',
+  `content_json` JSON NOT NULL COMMENT '简历内容数据',
+  `version` INT NOT NULL DEFAULT 1 COMMENT '版本号',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='简历表';
 
--- 初始化默认简历数据（使用占位标记，实际由应用初始化时写入完整数据）
-INSERT IGNORE INTO `resume` (`id`, `data`) VALUES (1, '{}');
+-- 注意：默认 schema 与内容会在应用首次调用 /api/getResume 时自动初始化写入，避免 SQL 中维护大段 JSON。
