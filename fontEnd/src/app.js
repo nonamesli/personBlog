@@ -15,6 +15,7 @@ const LazyTechPage = React.lazy(() => import('pages/Tech'));
 const LazyLivePage = React.lazy(() => import('pages/Live'));
 const LazyGuestBookPage = React.lazy(() => import('pages/GuestBook'));
 const LazyConcatPage = React.lazy(() => import('pages/Concat'));
+const LazyResumeEditPage = React.lazy(() => import('pages/ResumeEdit'));
 const LazyArticleAddPage = React.lazy(() => import('pages/Article/Add'));
 const LazyArticleEditPage = React.lazy(() => import('pages/Article/Edit'));
 const LazyArticleDetail = React.lazy(() => import('components/Article/Detail'));
@@ -145,6 +146,7 @@ const App = () => {
                         <Route path='/article/edit/:id' exact component={LazyArticleEditPage} />
                         <Route path='/guestbook' exact component={LazyGuestBookPage} />
                         <Route path='/concat' exact component={LazyConcatPage} />
+                        <Route path='/resume/edit' exact component={LazyResumeEditPage} />
                         <Route path='/write' exact component={LazyArticleAddPage} />
                         <Route path='/login' exact component={LazyLoginPage} />
                     </Switch>

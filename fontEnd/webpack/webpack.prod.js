@@ -121,6 +121,6 @@ module.exports = merge(common, {
     //   minRatio: 0.8,
     // }),
     // 需要时打开，构建后浏览器自动打开分析报告
-    new BundleAnalyzerPlugin(),
+    new BundleAnalyzerPlugin({ analyzerMode: 'static', openAnalyzer: false }),
   ],
 })

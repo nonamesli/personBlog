@@ -1,0 +1,67 @@
+.resume-edit-page {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 24px 64px;
+
+    .edit-header {
+        text-align: center;
+        padding: 24px 0;
+
+        .header-title {
+            margin-bottom: 8px !important;
+            color: #111827;
+        }
+
+        .header-sub {
+            color: #9ca3af;
+            font-size: 14px;
+            margin: 0;
+        }
+    }
+
+    .loading-wrap {
+        text-align: center;
+        padding: 80px 0;
+    }
+
+    .resume-form {
+        .resume-tabs {
+            .ant-tabs-nav {
+                margin-bottom: 16px;
+            }
+        }
+
+        .tab-card {
+            border-radius: 16px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06), 0 1px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .work-edit-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            background: #fafafa;
+
+            .work-edit-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 16px;
+
+                .work-edit-index {
+                    font-size: 15px;
+                    font-weight: 600;
+                    color: #374151;
+                }
+            }
+        }
+
+        .form-actions-card {
+            margin-top: 24px;
+            border-radius: 16px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06), 0 1px 12px rgba(0, 0, 0, 0.04);
+        }
+    }
+}

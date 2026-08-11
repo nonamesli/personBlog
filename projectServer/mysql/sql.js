@@ -109,6 +109,16 @@ exports.deleteArticle = "delete from article where id = ?";
 exports.getRouterConfig = "select * from router";
 
 /**
+ * 查询简历（单条记录，id=1）
+ */
+exports.getResume = "select * from resume where id = 1";
+
+/**
+ * 更新简历数据
+ */
+exports.updateResume = "update resume set data = ? where id = 1";
+
+/**
  * 最新文章（按 id 倒序取前 N 条；未登录只看公开，普通用户还能看自己的非公开，管理员看全部）
  */
 exports.getLatestArticles = function (userId, isAdmin) {

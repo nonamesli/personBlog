@@ -86,6 +86,24 @@ export const changePassword_request = (data) => {
     });
 }
 
+// 获取简历
+export const getResume_request = () => {
+    return http({
+        url: '/api/getResume',
+        method: 'get',
+        params: { _t: Date.now() }
+    });
+}
+
+// 更新简历（管理员）
+export const updateResume_request = (data) => {
+    return http({
+        url: '/api/updateResume',
+        method: 'post',
+        data
+    });
+}
+
 // 更新文章
 export const updateArticle_request = (data) => {
     return http({

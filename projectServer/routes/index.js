@@ -3,7 +3,7 @@ var router = express.Router();
 let connection = require('../mysql/connect');
 let { authMiddleware, JWT_SECRET } = require('../middleware/auth');
 let jwt = require('jsonwebtoken');
-let { searchTableSql, searchTableTotalSql, searchArticleListByType, searchArticleDetailById, addArticle, getRouterConfig, getLatestArticles, updateArticle, deleteArticle, getPrevArticle, getNextArticle, countArticleByType } = require('../mysql/sql');
+let { searchTableSql, searchTableTotalSql, searchArticleListByType, searchArticleDetailById, addArticle, getRouterConfig, getLatestArticles, updateArticle, deleteArticle, getPrevArticle, getNextArticle, countArticleByType, getResume, updateResume } = require('../mysql/sql');
 
 // 从请求头中解析当前登录用户信息（可选，不登录返回 null）
 function getCurrentUser (req) {
@@ -250,18 +250,52 @@ router.post('/api/deleteArticle', authMiddleware, function (req, res, next) {
     });
   });
 });
-
-
 //联系
 
+// 获取简历（公开接口，无需登录）
+router.get('/api/getResume', function (req, res, next) {
+  connection.query(getResume, function (err, results) {
+    if (err) {
+      return res.status(500).send({ data: null, meta: { code: 500, msg: '查询简历失败' } });
+    }
+    let data = {};
+    if (results.length > 0 && results[0].data) {
+      try {
+        data = typeof results[0].data === 'string' ? JSON.parse(results[0].data) : results[0].data;
+      } catch (e) {
+        data = {};
+      }
+    }
+    res.send({ data, meta: { code: 0 } });
+  });
+});
 
-
-
-
-
-
-
-
-
+// 更新简历（仅管理员）
+router.post('/api/updateResume', authMiddleware, function (req, res, next) {
+  if (req.user.role !== 'admin') {
+    return res.status(403).send({ data: null, meta: { code: 403, msg: '仅管理员可修改简历' } });
+  }
+  const { data } = req.body;
+  if (!data || typeof data !== 'object') {
+    return res.status(400).send({ data: null, meta: { code: 400, msg: '简历数据不能为空' } });
+  }
+  const jsonStr = JSON.stringify(data);
+  connection.query(updateResume, [jsonStr], function (err, results) {
+    if (err) {
+      return res.status(500).send({ data: null, meta: { code: 500, msg: '更新简历失败' } });
+    }
+    if (results.affectedRows === 0) {
+      // 没有记录则插入
+      connection.query('insert into resume(id, data) values(1, ?)', [jsonStr], function (err2) {
+        if (err2) {
+          return res.status(500).send({ data: null, meta: { code: 500, msg: '新增简历失败' } });
+        }
+        res.send({ data: null, meta: { code: 0, msg: '保存成功' } });
+      });
+    } else {
+      res.send({ data: null, meta: { code: 0, msg: '保存成功' } });
+    }
+  });
+});
 
 module.exports = router;
