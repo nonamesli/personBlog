@@ -5,7 +5,7 @@ export const router_request = (params) => {
     return http({
         url: '/api/getRouterConfig',
         method: 'get',
-        params
+        params: { ...params, _t: Date.now() }
     });
 }
 
@@ -13,7 +13,7 @@ export const index_request = (params) => {
     return http({
         url: '/api/users',
         method: 'get',
-        params
+        params: { ...params, _t: Date.now() }
     });
 }
 
@@ -21,7 +21,7 @@ export const getArticleDetailById_request = (params) => {
     return http({
         url: '/api/getArticleDetailById',
         method: 'get',
-        params
+        params: { ...params, _t: Date.now() }
     });
 }
 
@@ -29,7 +29,7 @@ export const getArticleList_request = (params) => {
     return http({
         url: '/api/getArticleList',
         method: 'get',
-        params
+        params: { ...params, _t: Date.now() }
     });
 }
 
@@ -46,7 +46,7 @@ export const getLatestArticles_request = (params) => {
     return http({
         url: '/api/getLatestArticles',
         method: 'get',
-        params
+        params: { ...params, _t: Date.now() }
     });
 }
 
@@ -72,7 +72,8 @@ export const register_request = (data) => {
 export const getUserInfo_request = () => {
     return http({
         url: '/api/getUserInfo',
-        method: 'get'
+        method: 'get',
+        params: { _t: Date.now() }
     });
 }
 
