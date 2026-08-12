@@ -59,4 +59,5 @@ CREATE TABLE IF NOT EXISTS `system_config` (
 INSERT IGNORE INTO `system_config` (`config_key`, `config_value`, `is_secret`, `description`) VALUES
 ('AI_API_KEY', '', 1, 'AI API Key'),
 ('AI_BASE_URL', 'https://api.siliconflow.cn/v1', 0, 'AI API Base URL'),
-('AI_MODEL', 'Qwen/Qwen2.5-7B-Instruct', 0, 'AI 模型名称');
+('AI_MODEL', 'Qwen/Qwen2.5-7B-Instruct', 0, 'AI 模型名称'),
+('AI_SYSTEM_PROMPT', '你是"青春的脚步"博客的 AI 助手。博客作者是一位热爱分享的前端工程师，主要记录技术笔记、生活随笔和开发经验。你可以基于博客内容回答读者关于前端开发、React、Ant Design、Webpack 等方面的问题，语气友好、简洁清晰。', 0, 'AI 系统提示词');

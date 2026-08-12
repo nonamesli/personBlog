@@ -377,6 +377,7 @@ router.post('/api/ai/chat', async function (req, res, next) {
   const apiKey = getConfig('AI_API_KEY');
   const baseURL = getConfig('AI_BASE_URL') || 'https://api.deepseek.com/v1';
   const model = getConfig('AI_MODEL') || 'deepseek-chat';
+  const systemPrompt = getConfig('AI_SYSTEM_PROMPT') || '你是一个有帮助的博客 AI 助手，可以回答技术问题、总结文章、提供建议。回答要简洁清晰。';
 
   if (!apiKey) {
     return res.status(500).send({ data: null, meta: { code: 500, msg: '未配置 AI API Key' } });
@@ -384,7 +385,7 @@ router.post('/api/ai/chat', async function (req, res, next) {
 
   try {
     const messages = [
-      { role: 'system', content: '你是一个有帮助的博客 AI 助手，可以回答技术问题、总结文章、提供建议。回答要简洁清晰。' },
+      { role: 'system', content: systemPrompt },
       ...history,
       { role: 'user', content: message }
     ];
@@ -432,7 +433,7 @@ router.post('/api/admin/aiConfig', authMiddleware, async function (req, res, nex
   if (req.user.role !== 'admin') {
     return res.status(403).send({ data: null, meta: { code: 403, msg: '仅管理员可修改配置' } });
   }
-  let { AI_API_KEY, AI_BASE_URL, AI_MODEL } = req.body;
+  let { AI_API_KEY, AI_BASE_URL, AI_MODEL, AI_SYSTEM_PROMPT } = req.body;
   if (!AI_BASE_URL || !AI_MODEL) {
     return res.status(400).send({ data: null, meta: { code: 400, msg: 'Base URL 和 Model 不能为空' } });
   }
@@ -444,6 +445,7 @@ router.post('/api/admin/aiConfig', authMiddleware, async function (req, res, nex
     await setConfig('AI_API_KEY', AI_API_KEY || '', 1, 'AI API Key');
     await setConfig('AI_BASE_URL', AI_BASE_URL, 0, 'AI API Base URL');
     await setConfig('AI_MODEL', AI_MODEL, 0, 'AI 模型名称');
+    await setConfig('AI_SYSTEM_PROMPT', AI_SYSTEM_PROMPT || '', 0, 'AI 系统提示词');
     res.send({ data: null, meta: { code: 0, msg: '保存成功' } });
   } catch (err) {
     console.error('保存 AI 配置失败:', err.message);

@@ -125,6 +125,12 @@ const AiChat = ({ visible, onClose }) => {
                             <Form.Item name='AI_API_KEY' label='API Key'>
                                 <Input.Password placeholder='留空则保持原配置不变' />
                             </Form.Item>
+                            <Form.Item name='AI_SYSTEM_PROMPT' label='System Prompt'>
+                                <Input.TextArea
+                                    rows={4}
+                                    placeholder='输入 AI 系统提示词，可包含博客定位、作者简介等'
+                                />
+                            </Form.Item>
                             <Button type='primary' htmlType='submit' loading={configLoading} block>
                                 保存配置
                             </Button>
